@@ -1,0 +1,31 @@
+import { Poppins } from "next/font/google";
+import "./globals.css";
+import ClientProviders from "./ClientProviders";
+
+const poppins = Poppins({
+  variable: "--font-poppins",
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700", "800"],
+});
+
+export const metadata = {
+  title: "macyemacye",
+  description: "Premium store in Rwanda",
+  icons: {
+    icon: "/logoo.png",
+  },
+};
+
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return (
+    <html lang="en">
+      <body className={`${poppins.variable} antialiased`}>
+        <ClientProviders>{children}</ClientProviders>
+      </body>
+    </html>
+  );
+}
