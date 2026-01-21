@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import MainLayout from "@/app/components/templates/MainLayout";
 import BreadCrumb from "@/app/components/feedback/BreadCrumb";
 import { useParams } from "next/navigation";
@@ -43,6 +43,19 @@ const ProductDetailsPage = () => {
   const [selectedAttributes, setSelectedAttributes] = useState<
     Record<string, string>
   >({});
+
+  // Auto-select first variant on load once data is available
+  useEffect(() => {
+    if (data?.product?.variants?.length && !selectedVariant) {
+      const firstVariant = data.product.variants[0];
+      setSelectedVariant(firstVariant);
+      const initialAttrs: Record<string, string> = {};
+      firstVariant.attributes.forEach((attr) => {
+        initialAttrs[attr.attribute.name] = attr.value.value;
+      });
+      setSelectedAttributes(initialAttrs);
+    }
+  }, [data, selectedVariant]);
 
   if (loading) return <ProductDetailSkeletonLoader />;
 

@@ -1,10 +1,12 @@
 "use client";
+import { useState } from "react";
 import Rating from "@/app/components/feedback/Rating";
 import { useAddToCartMutation } from "@/app/store/apis/CartApi";
 import useToast from "@/app/hooks/ui/useToast";
 import { Product } from "@/app/types/productTypes";
-import { Palette, Ruler, Info, Package, Check, X } from "lucide-react";
+import { Palette, Ruler, Info, Package, Check, X, Store, Mail, Phone, MapPin, Navigation, ChevronDown, ChevronUp } from "lucide-react";
 import { motion } from "framer-motion";
+import Link from "next/link";
 
 interface ProductInfoProps {
   id: string;
@@ -36,6 +38,10 @@ const ProductInfo: React.FC<ProductInfoProps> = ({
   const { showToast } = useToast();
   const [addToCart, { isLoading }] = useAddToCartMutation();
 
+  // Collapsible section states
+  const [isDescriptionOpen, setIsDescriptionOpen] = useState(true);
+  const [isShopInfoOpen, setIsShopInfoOpen] = useState(true);
+
   const handleAddToCart = async (e: React.MouseEvent) => {
     e.preventDefault();
     if (!selectedVariant) {
@@ -58,17 +64,21 @@ const ProductInfo: React.FC<ProductInfoProps> = ({
   const price = selectedVariant
     ? selectedVariant.price
     : variants[0]?.price || 0;
-  const discountPrice = selectedVariant
+
+  // Safely handle null or undefined discountPrice
+  const rawDiscountPrice = selectedVariant
     ? selectedVariant.discountPrice
     : variants[0]?.discountPrice;
+  const discountPrice = (rawDiscountPrice === null || rawDiscountPrice === undefined) ? undefined : rawDiscountPrice;
+
   const stock = selectedVariant
     ? selectedVariant.stock
     : variants[0]?.stock || 0;
 
   const hasDiscount = discountPrice !== undefined && discountPrice < price;
-  const displayPrice = hasDiscount ? discountPrice : price;
+  const displayPrice = hasDiscount ? (discountPrice as number) : price;
   const discountPercentage = hasDiscount
-    ? Math.round(((price - discountPrice) / price) * 100)
+    ? Math.round(((price - (discountPrice as number)) / price) * 100)
     : 0;
 
   // Compute available colors and sizes
@@ -366,76 +376,106 @@ const ProductInfo: React.FC<ProductInfoProps> = ({
         )}
       </div>
 
-      {/* Description */}
-      <div className="space-y-3">
-        <h3 className="text-lg font-semibold text-gray-900">Description</h3>
-        <p className="text-gray-600 text-sm leading-relaxed">{description}</p>
+      {/* Description - Collapsible */}
+      <div className="space-y-3 border-t border-gray-100 pt-4 mt-2">
+        <button
+          type="button"
+          onClick={() => setIsDescriptionOpen(!isDescriptionOpen)}
+          className="flex items-center justify-between w-full text-left"
+        >
+          <h3 className="text-lg font-semibold text-gray-900">Description</h3>
+          {isDescriptionOpen ? (
+            <ChevronUp size={20} className="text-gray-400" />
+          ) : (
+            <ChevronDown size={20} className="text-gray-400" />
+          )}
+        </button>
+        {isDescriptionOpen && (
+          <p className="text-gray-600 text-sm leading-relaxed">{description}</p>
+        )}
       </div>
 
-      {/* Shop Information */}
+      {/* Shop Information - Collapsible */}
       {shop && (
-        <div className="space-y-4 border-t border-gray-100 pt-6 mt-2">
-          <div className="flex items-center justify-between">
+        <div className="space-y-4 border-t border-gray-100 pt-4 mt-2">
+          <button
+            type="button"
+            onClick={() => setIsShopInfoOpen(!isShopInfoOpen)}
+            className="flex items-center justify-between w-full text-left"
+          >
             <h3 className="text-lg font-semibold text-gray-900">Sold by</h3>
-            <span className="text-amber-600 text-sm font-semibold hover:underline cursor-pointer flex items-center gap-1">
-              Visit Shop <Store size={14} />
-            </span>
-          </div>
-
-          <div className="bg-amber-50/50 p-4 rounded-2xl border border-amber-100/50 space-y-4">
-            <div className="flex items-center gap-3">
-              <div className="w-12 h-12 bg-amber-100 rounded-xl flex items-center justify-center text-amber-600 font-bold text-lg shadow-sm border border-amber-200/50">
-                {shop.logo ? (
-                  <img src={shop.logo} alt={shop.name} className="w-full h-full object-cover rounded-xl" />
-                ) : (
-                  shop.name.charAt(0).toUpperCase()
-                )}
-              </div>
-              <div>
-                <h4 className="font-bold text-gray-900">{shop.name}</h4>
-                <p className="text-xs text-gray-500 line-clamp-1">{shop.description || "Vendor on MacyeMacye"}</p>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pb-2">
-              {shop.email && (
-                <div className="flex items-center gap-2 text-sm text-gray-600 bg-white/60 p-2 rounded-lg border border-amber-100/30">
-                  <Mail className="w-4 h-4 text-amber-500" />
-                  <span className="truncate">{shop.email}</span>
-                </div>
-              )}
-              {shop.phone && (
-                <div className="flex items-center gap-2 text-sm text-gray-600 bg-white/60 p-2 rounded-lg border border-amber-100/30">
-                  <Phone className="w-4 h-4 text-amber-500" />
-                  <span>{shop.phone}</span>
-                </div>
+            <div className="flex items-center gap-2">
+              <Link
+                href={`/shop/${shop.slug}`}
+                onClick={(e) => e.stopPropagation()}
+                className="text-amber-600 text-sm font-semibold hover:underline cursor-pointer flex items-center gap-1"
+              >
+                Visit Shop <Store size={14} />
+              </Link>
+              {isShopInfoOpen ? (
+                <ChevronUp size={20} className="text-gray-400" />
+              ) : (
+                <ChevronDown size={20} className="text-gray-400" />
               )}
             </div>
+          </button>
 
-            {(shop.country || shop.city || shop.street) && (
-              <div className="space-y-2 pt-2 border-t border-amber-100/30">
-                <div className="flex items-start gap-2 text-sm text-gray-600">
-                  <MapPin className="w-4 h-4 text-amber-500 mt-0.5" />
-                  <div>
-                    <p className="font-medium text-gray-800">
-                      {[shop.street, shop.village, shop.city, shop.country]
-                        .filter(Boolean)
-                        .join(", ")}
-                    </p>
-                    {shop.placeName && (
-                      <p className="text-xs text-silver-500 italic">Near {shop.placeName}</p>
-                    )}
+          {isShopInfoOpen && (
+            <div className="bg-amber-50/50 p-4 rounded-2xl border border-amber-100/50 space-y-4">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 bg-amber-100 rounded-xl flex items-center justify-center text-amber-600 font-bold text-lg shadow-sm border border-amber-200/50">
+                  {shop.logo ? (
+                    <img src={shop.logo} alt={shop.name} className="w-full h-full object-cover rounded-xl" />
+                  ) : (
+                    shop.name.charAt(0).toUpperCase()
+                  )}
+                </div>
+                <div>
+                  <h4 className="font-bold text-gray-900">{shop.name}</h4>
+                  <p className="text-xs text-gray-500 line-clamp-1">{shop.description || "Vendor on MacyeMacye"}</p>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pb-2">
+                {shop.email && (
+                  <div className="flex items-center gap-2 text-sm text-gray-600 bg-white/60 p-2 rounded-lg border border-amber-100/30">
+                    <Mail className="w-4 h-4 text-amber-500" />
+                    <span className="truncate">{shop.email}</span>
                   </div>
-                </div>
-                {shop.latitude && shop.longitude && (
-                  <div className="flex items-center gap-2 text-[10px] text-gray-400 font-mono">
-                    <Navigation className="w-3 h-3" />
-                    <span>{shop.latitude.toFixed(4)}, {shop.longitude.toFixed(4)}</span>
+                )}
+                {shop.phone && (
+                  <div className="flex items-center gap-2 text-sm text-gray-600 bg-white/60 p-2 rounded-lg border border-amber-100/30">
+                    <Phone className="w-4 h-4 text-amber-500" />
+                    <span>{shop.phone}</span>
                   </div>
                 )}
               </div>
-            )}
-          </div>
+
+              {(shop.country || shop.city || shop.street) && (
+                <div className="space-y-2 pt-2 border-t border-amber-100/30">
+                  <div className="flex items-start gap-2 text-sm text-gray-600">
+                    <MapPin className="w-4 h-4 text-amber-500 mt-0.5" />
+                    <div>
+                      <p className="font-medium text-gray-800">
+                        {[shop.street, shop.village, shop.city, shop.country]
+                          .filter(Boolean)
+                          .join(", ")}
+                      </p>
+                      {shop.placeName && (
+                        <p className="text-xs text-silver-500 italic">Near {shop.placeName}</p>
+                      )}
+                    </div>
+                  </div>
+                  {shop.latitude && shop.longitude && (
+                    <div className="flex items-center gap-2 text-[10px] text-gray-400 font-mono">
+                      <Navigation className="w-3 h-3" />
+                      <span>{shop.latitude.toFixed(4)}, {shop.longitude.toFixed(4)}</span>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          )}
         </div>
       )}
 

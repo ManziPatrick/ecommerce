@@ -1,0 +1,23 @@
+services:
+  - type: web
+    name: macyemacye-backend
+    runtime: node
+    plan: free
+    region: oregon
+    buildCommand: npm install && npx prisma generate && npm run build
+    startCommand: npm run start
+    rootDirectory: server
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: DATABASE_URL
+        fromDatabase:
+          name: macyemacye-db
+          property: connectionString
+
+databases:
+  - name: macyemacye-db
+    plan: free
+    region: oregon
