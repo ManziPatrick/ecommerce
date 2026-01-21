@@ -19,6 +19,7 @@ const uploadToCloudinary = async (files) => {
                 fetch_format: "webp",
                 quality: "auto",
                 flags: "progressive",
+                timeout: 60000, // 60 seconds timeout
             }, (error, result) => {
                 if (error) {
                     console.error(`❌ Cloudinary upload error for file ${index + 1}:`, error);
@@ -35,20 +36,19 @@ const uploadToCloudinary = async (files) => {
                 .end(file.buffer);
         }));
         const results = await Promise.allSettled(uploadPromises);
-        // Log failed attempts
-        results.forEach((result, idx) => {
+        // Log failed attempts and map results to preserve indexes
+        const imageResults = results.map((result, idx) => {
             if (result.status === "rejected") {
                 console.error(`🔴 Promise ${idx + 1} rejected:`, result.reason);
+                return null;
             }
+            return result.value;
         });
-        const successfulUploads = results
-            .filter((result) => result.status === "fulfilled")
-            .map((result) => result.value);
-        return successfulUploads;
+        return imageResults;
     }
     catch (error) {
         console.error("🔥 Extreme error in uploadToCloudinary wrapper:", error);
-        return [];
+        return files.map(() => null); // Return array of nulls to maintain indexing expectation
     }
 };
 exports.uploadToCloudinary = uploadToCloudinary;

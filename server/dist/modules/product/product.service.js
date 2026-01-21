@@ -214,7 +214,7 @@ class ProductService {
                 const product = await this.productRepository.createProduct({
                     ...productData,
                     slug: (0, slugify_1.default)(productData.name),
-                    shopId: data.shopId,
+                    shopId: productData.shopId,
                 }, tx);
                 for (const variant of variants) {
                     await this.variantRepository.createVariant({

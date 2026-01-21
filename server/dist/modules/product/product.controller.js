@@ -71,8 +71,12 @@ class ProductController {
             if (files.length > 0) {
                 try {
                     imageResults = await (0, uploadToCloudinary_1.uploadToCloudinary)(files);
-                    if (imageResults.length === 0) {
-                        throw new AppError_1.default(400, "Failed to upload images to Cloudinary");
+                    const successCount = imageResults.filter(r => r !== null).length;
+                    if (successCount === 0) {
+                        throw new AppError_1.default(400, "Failed to upload all images to Cloudinary");
+                    }
+                    if (successCount < files.length) {
+                        console.warn(`Partial upload success: ${successCount}/${files.length} images uploaded.`);
                     }
                 }
                 catch (error) {
@@ -86,8 +90,8 @@ class ProductController {
                 let attributes = [];
                 let imageIndexes = [];
                 try {
-                    attributes = JSON.parse(variant.attributes || "[]");
-                    imageIndexes = JSON.parse(variant.imageIndexes || "[]");
+                    attributes = typeof variant.attributes === 'string' ? JSON.parse(variant.attributes || "[]") : (variant.attributes || []);
+                    imageIndexes = typeof variant.imageIndexes === 'string' ? JSON.parse(variant.imageIndexes || "[]") : (variant.imageIndexes || []);
                 }
                 catch (error) {
                     console.error(`Error parsing JSON for variant ${index}:`, error);
@@ -96,10 +100,15 @@ class ProductController {
                 // Map image URLs based on imageIndexes
                 const imageUrls = imageIndexes
                     .map((idx) => {
-                    if (idx >= 0 && idx < imageResults.length) {
+                    if (idx >= 0 && idx < imageResults.length && imageResults[idx]) {
                         return imageResults[idx].url;
                     }
-                    console.warn(`Invalid image index ${idx} for variant ${index}`);
+                    if (idx >= imageResults.length || idx < 0) {
+                        console.warn(`Invalid image index ${idx} for variant ${index}`);
+                    }
+                    else if (!imageResults[idx]) {
+                        console.warn(`Image at index ${idx} failed to upload for variant ${index}`);
+                    }
                     return null;
                 })
                     .filter((url) => url !== null);
@@ -178,8 +187,8 @@ class ProductController {
                     if (variantFiles.length > 0) {
                         const uploadedImages = await (0, uploadToCloudinary_1.uploadToCloudinary)(variantFiles);
                         imageUrls = uploadedImages
-                            .map((img) => img.url)
-                            .filter(Boolean);
+                            .filter((img) => img !== null)
+                            .map((img) => img.url);
                     }
                     // Validate images from req.body
                     let bodyImages = variant.images || [];
