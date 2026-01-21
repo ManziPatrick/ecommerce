@@ -8,7 +8,7 @@ WORKDIR /app
 COPY package*.json ./
 
 # Install dependencies (including Prisma & TS)
-RUN npm ci
+RUN npm ci --legacy-peer-deps
 
 # Copy Prisma schema and generate client
 COPY prisma ./prisma
