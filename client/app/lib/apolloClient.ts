@@ -32,4 +32,4 @@ export const initializeApollo = (initialState = null) => {
   return client;
 };
 
-export default initializeApollo(); // Default export for client-side usage
+// export default initializeApollo(); // Default export removed to prevent side effects
