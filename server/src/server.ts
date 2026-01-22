@@ -3,12 +3,19 @@ import { addAlias } from "module-alias";
 import path from "path";
 
 // Load environment first
+// Only load from .env if it exists and don't override existing system env vars
 dotenv.config();
 
 // Module aliases
-const isProduction = process.env.NODE_ENV === "production";
-const projectRoot = path.resolve(__dirname, "..");
-const aliasPath = path.join(projectRoot, isProduction ? "dist" : "src");
+// In both development (ts-node src/server.ts) and production (node dist/server.js),
+// __dirname points to the directory containing this file (src or dist).
+// Since all @ imports are relative to this root, we can just use __dirname.
+const aliasPath = path.resolve(__dirname);
+
+console.log("🚀 [SERVER STARTUP]");
+console.log("📍 Alias @ ->", aliasPath);
+console.log("🌍 NODE_ENV:", process.env.NODE_ENV);
+
 addAlias("@", aliasPath);
 
 import { createApp } from "./app";
