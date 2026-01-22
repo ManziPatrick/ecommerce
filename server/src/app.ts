@@ -36,11 +36,17 @@ export const createApp = async () => {
   const socketManager = new SocketManager(httpServer);
   const io = socketManager.getIO();
 
-  // 1. Health check route (first)
+  // 1. Health check routes (first)
   app.get("/health", (req, res) => {
     res.json({
-      status: "healthy",
-      service: "macyemacye API",
+      status: "ok",
+      timestamp: new Date().toISOString()
+    });
+  });
+
+  app.get("/api/health", (req, res) => {
+    res.json({
+      status: "ok",
       timestamp: new Date().toISOString()
     });
   });

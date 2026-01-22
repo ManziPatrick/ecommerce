@@ -6,18 +6,88 @@ services:
     region: oregon
     buildCommand: npm install --legacy-peer-deps && npx prisma generate && npm run build
     startCommand: npm run start
-    rootDirectory: server
+    rootDir: server
+    healthCheckPath: /api/health
     envVars:
+      # Server Configuration
       - key: NODE_ENV
         value: production
       - key: PORT
         value: 10000
+      
+      # Database (auto-configured from database below)
       - key: DATABASE_URL
         fromDatabase:
           name: macyemacye-db
           property: connectionString
+      
+      # Security - IMPORTANT: Set these in Render dashboard
+      - key: SESSION_SECRET
+        generateValue: true
+      - key: COOKIE_SECRET
+        generateValue: true
+      - key: ACCESS_TOKEN_SECRET
+        generateValue: true
+      - key: REFRESH_TOKEN_SECRET
+        generateValue: true
+      
+      # CORS & Cookies - UPDATE THESE with your actual frontend URL
+      - key: ALLOWED_ORIGINS
+        value: https://your-app.netlify.app
+      - key: COOKIE_DOMAIN
+        value: .onrender.com
+      - key: CLIENT_URL_PROD
+        value: https://your-app.netlify.app
+      - key: CLIENT_URL_DEV
+        value: http://localhost:3000
+      
+      # Redis - OPTIONAL but recommended (add Redis service or use external provider)
+      # - key: REDIS_URL
+      #   fromService:
+      #     name: macyemacye-redis
+      #     type: redis
+      #     property: connectionString
+      
+      # Stripe - Set these in Render dashboard with your Stripe keys
+      # - key: STRIPE_PUBLIC_KEY
+      #   sync: false
+      # - key: STRIPE_SECRET_KEY
+      #   sync: false
+      # - key: STRIPE_WEBHOOK_SECRET
+      #   sync: false
+      
+      # Cloudinary - Set these in Render dashboard
+      # - key: CLOUDINARY_CLOUD_NAME
+      #   sync: false
+      # - key: CLOUDINARY_API_KEY
+      #   sync: false
+      # - key: CLOUDINARY_API_SECRET
+      #   sync: false
+      
+      # Email SMTP - Set these in Render dashboard
+      # - key: EMAIL_USER
+      #   sync: false
+      # - key: EMAIL_PASS
+      #   sync: false
+      
+      # OAuth (Optional) - Uncomment and set in Render dashboard if needed
+      # - key: GOOGLE_CLIENT_ID
+      #   sync: false
+      # - key: GOOGLE_CLIENT_SECRET
+      #   sync: false
+      # - key: GOOGLE_CALLBACK_URL_PROD
+      #   value: https://your-backend.onrender.com/api/auth/google/callback
 
 databases:
   - name: macyemacye-db
     plan: free
     region: oregon
+    databaseName: macyemacye
+    user: macyemacye
+
+# Optional: Uncomment to add Redis for session storage (recommended for production)
+# - type: redis
+#   name: macyemacye-redis
+#   plan: free
+#   region: oregon
+#   maxmemoryPolicy: allkeys-lru
