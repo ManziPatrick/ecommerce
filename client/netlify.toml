@@ -19,10 +19,10 @@
 # NODE_ENV = "production"
 
 # Redirects and rewrites
-[[redirects]]
-  from = "/*"
-  to = "/index.html"
-  status = 200
+# [[redirects]]
+#   from = "/*"
+#   to = "/index.html"
+#   status = 200
 
 # Headers for security
 [[headers]]
