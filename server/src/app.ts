@@ -80,8 +80,8 @@ export const createApp = async () => {
     saveUninitialized: true,
     cookie: {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax", // "none" required for cross-site
+      secure: process.env.NODE_ENV === "production" || !!process.env.RENDER,
+      sameSite: (process.env.NODE_ENV === "production" || !!process.env.RENDER) ? "none" : "lax", // "none" required for cross-site
       maxAge: 1000 * 60 * 60 * 24 * 7 // 7 days
     }
   }));
