@@ -54,7 +54,7 @@ export const createApp = async () => {
   // 2. CORS
   const allowedOrigins = process.env.ALLOWED_ORIGINS 
     ? process.env.ALLOWED_ORIGINS.split(",") 
-    : ["http://localhost:3000", "http://localhost:3001","https://macyemacye.netlify.app", "http://localhost:5173"];
+    : ["http://localhost:3000", "https://ecommerce-blush-six-71.vercel.app","https://macyemacye.netlify.app", "http://localhost:5173"];
 
   app.use(cors({
     origin: allowedOrigins,
