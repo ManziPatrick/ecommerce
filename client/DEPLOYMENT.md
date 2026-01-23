@@ -359,3 +359,57 @@ Before reaching out for support, verify:
 - [ ] Dependencies are up to date
 - [ ] No hardcoded localhost URLs in code
 - [ ] Backend CORS is configured correctly
+
+# Frontend Deployment Guide (Vercel)
+
+This guide walks you through deploying the Next.js frontend to Vercel (Recommended).
+
+## Prerequisites
+
+- [ ] GitHub repository with your code
+- [ ] Vercel account (free tier available at [vercel.com](https://vercel.com))
+- [ ] Backend deployed and URL available
+
+## Step 1: Import Project
+
+1. Go to [Vercel Dashboard](https://vercel.com/dashboard)
+2. Click **"Add New..."** -> **"Project"**
+3. Import your GitHub repository (`ecommerce`)
+
+## Step 2: Configure Project settings
+
+1. **Framework Preset**: Ensure "Next.js" is selected.
+2. **Root Directory**: Click "Edit" and select `client`.
+3. **Build Command**: `next build` (or leave default).
+4. **Output Directory**: `.next` (automatically detected).
+
+## Step 3: Environment Variables
+
+Add the following environment variables in the "Environment Variables" section:
+
+```bash
+# Backend API URL (Production)
+NEXT_PUBLIC_API_URL=https://your-backend.onrender.com
+NEXT_PUBLIC_API_URL_PROD=https://your-backend.onrender.com
+NEXT_PUBLIC_API_URL_DEV=http://localhost:5000
+
+# Other Public Configs
+NEXT_PUBLIC_APP_NAME="MacyeMacye"
+NEXT_PUBLIC_APP_URL="https://your-vercel-app.vercel.app"
+NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME="your-cloud-name"
+# ... add other NEXT_PUBLIC_ variables from your .env
+```
+
+## Step 4: Deploy
+
+1. Click **"Deploy"**.
+2. Wait for the build to complete.
+3. Your site will be available at `https://your-project.vercel.app`.
+
+## Configuration File
+
+The project includes a `vercel.json` file in the `client` directory that configures:
+- Security headers (X-Frame-Options, XSS Protection, etc.)
+- Build commands
+
+No manual configuration of headers is needed if this file is present.
