@@ -1,14 +1,6 @@
 "use client";
 
 import { useEffect } from "react";
-import { Poppins } from "next/font/google"; // Match layout font
-import "./globals.css"; // Ensure styles are loaded
-
-const poppins = Poppins({
-  variable: "--font-poppins",
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700", "800"],
-});
 
 export default function GlobalError({
   error,
@@ -23,7 +15,7 @@ export default function GlobalError({
 
   return (
     <html lang="en">
-      <body className={`${poppins.variable} antialiased`}>
+      <body className="antialiased" style={{ fontFamily: 'Poppins, system-ui, sans-serif' }}>
         <div className="flex flex-col items-center justify-center min-h-screen p-4 text-center bg-gray-50">
           <h1 className="text-4xl font-bold mb-4">Something went wrong!</h1>
           <p className="mb-8 text-gray-600">
