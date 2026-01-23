@@ -72,6 +72,8 @@ export const createApp = async () => {
   app.use(cookieParser());
 
   // 5. Session (memory store)
+  app.set("trust proxy", 1); // Required for secure cookies behind Render proxy
+
   app.use(session({
     secret: process.env.SESSION_SECRET || "dev-session-secret",
     resave: false,
@@ -79,6 +81,7 @@ export const createApp = async () => {
     cookie: {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax", // "none" required for cross-site
       maxAge: 1000 * 60 * 60 * 24 * 7 // 7 days
     }
   }));
