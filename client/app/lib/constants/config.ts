@@ -1,14 +1,12 @@
-const DEV_API_URL = "http://localhost:5000/api/v1";
-const PROD_API_URL = "https://ecommerce-1-cfoi.onrender.com/api/v1";
+const DEV_API_HOST = "http://localhost:5000";
+const PROD_API_HOST = "https://ecommerce-1-cfoi.onrender.com";
 
-export const API_BASE_URL =
+const BASE_HOST =
   process.env.NODE_ENV === "production"
-    ? process.env.NEXT_PUBLIC_API_URL_PROD || PROD_API_URL
-    : process.env.NEXT_PUBLIC_API_URL_DEV || DEV_API_URL;
+    ? process.env.NEXT_PUBLIC_API_URL_PROD || PROD_API_HOST
+    : process.env.NEXT_PUBLIC_API_URL_DEV || DEV_API_HOST;
 
-export const AUTH_API_BASE_URL =
-  process.env.NODE_ENV === "production"
-    ? process.env.NEXT_PUBLIC_API_URL_PROD || PROD_API_URL
-    : process.env.NEXT_PUBLIC_API_URL_DEV || DEV_API_URL;
+export const API_BASE_URL = `${BASE_HOST}/api/v1`;
+export const AUTH_API_BASE_URL = `${BASE_HOST}/api/v1`;
 
 export const GRAPHQL_URL = `${API_BASE_URL}/graphql`;
