@@ -8,6 +8,8 @@ import morgan from "morgan";
 import compression from "compression";
 import session from "express-session";
 import passport from "passport";
+import { RedisStore } from "connect-redis";
+import redisClient from "./infra/cache/redis";
 import optionalAuth from "@/shared/middlewares/optionalAuth";
 
 dotenv.config();
@@ -52,9 +54,11 @@ export const createApp = async () => {
   });
 
   // 2. CORS
+  // Ensure "ecommerce-1-cfoi.onrender.com" or your exact backend domain is NOT in the allowed origins if you are using that for backend.
+  // Allowed origins should be the FRONTEND domains.
   const allowedOrigins = process.env.ALLOWED_ORIGINS 
     ? process.env.ALLOWED_ORIGINS.split(",") 
-    : ["http://localhost:3000", "https://ecommerce-blush-six-71.vercel.app","https://macyemacye.netlify.app", "http://localhost:5173"];
+    : ["http://localhost:3000", "https://ecommerce-blush-six-71.vercel.app", "https://macyemacye.netlify.app", "http://localhost:5173", "https://e-commerce-crafters-bn-1-3ibl.onrender.com"];
 
   app.use(cors({
     origin: allowedOrigins,
@@ -71,18 +75,27 @@ export const createApp = async () => {
   app.use(bodyParser.urlencoded({ extended: true }));
   app.use(cookieParser());
 
-  // 5. Session (memory store)
+  // 5. Session (Redis store for production persistence)
   app.set("trust proxy", 1); // Required for secure cookies behind Render proxy
 
   app.use(session({
+    store: new RedisStore({ 
+      client: redisClient, 
+      prefix: "sess:",
+      // If redisClient is a mock/fails, this might throw or fallback. 
+      // But we handled the mock in redis.ts to warn but work (sort of).
+    }),
     secret: process.env.SESSION_SECRET || "dev-session-secret",
-    resave: false,
-    saveUninitialized: true,
+    resave: false,             // redis-connect recommends false
+    saveUninitialized: false,  // false is better for login sessions (only save if something is added to session)
     cookie: {
       httpOnly: true,
+      // Secure MUST be true for SameSite=None
       secure: process.env.NODE_ENV === "production" || !!process.env.RENDER,
-      sameSite: (process.env.NODE_ENV === "production" || !!process.env.RENDER) ? "none" : "lax", // "none" required for cross-site
-      maxAge: 1000 * 60 * 60 * 24 * 7 // 7 days
+      // SameSite=None is required for cross-site cookies (Frontend on Vercel -> Backend on Render)
+      sameSite: (process.env.NODE_ENV === "production" || !!process.env.RENDER) ? "none" : "lax", 
+      maxAge: 1000 * 60 * 60 * 24 * 7, // 7 days
+      domain: (process.env.NODE_ENV === "production" && process.env.COOKIE_DOMAIN) ? process.env.COOKIE_DOMAIN : undefined
     }
   }));
 

@@ -147,5 +147,33 @@ export const configureChatRoutes = (io: SocketIOServer) => {
    */
   router.patch("/:chatId/status", protect, chatController.updateChatStatus);
 
+  /**
+   * @swagger
+   * /chats/ai:
+   *   post:
+   *     summary: Chat with AI receptionist
+   *     description: Send messages to the AI receptionist and get a response.
+   *     requestBody:
+   *       required: true
+   *       content:
+   *         application/json:
+   *           schema:
+   *             type: object
+   *             properties:
+   *               messages:
+   *                 type: array
+   *                 items:
+   *                   type: object
+   *                   properties:
+   *                     role: 
+   *                       type: string
+   *                     content:
+   *                       type: string
+   *     responses:
+   *       200:
+   *         description: AI response.
+   */
+  router.post("/ai", chatController.chatWithAI);
+
   return router;
 };

@@ -125,4 +125,19 @@ export class ChatController {
       status,
     });
   });
+
+  chatWithAI = asyncHandler(async (req: Request, res: Response) => {
+    const { messages } = req.body;
+
+    if (!messages || !Array.isArray(messages)) {
+      throw new Error("Invalid messages format");
+    }
+
+    const response = await this.chatService.chatWithAI(messages);
+
+    sendResponse(res, 200, {
+      data: { aiResponse: response },
+      message: "AI response generated successfully",
+    });
+  });
 }

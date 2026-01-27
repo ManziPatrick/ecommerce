@@ -26,6 +26,10 @@ const APP_URL = process.env.NEXT_PUBLIC_APP_URL || `http://localhost:${PORT}`;
 async function bootstrap() {
   try {
     console.log(`🚀 Starting server on port ${PORT}...`);
+    
+    // Connect to database
+    const { connectDB } = await import("./infra/database/database.config");
+    await connectDB();
 
     const { httpServer } = await createApp();
 

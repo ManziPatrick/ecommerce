@@ -118,7 +118,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
         <Link href={`/product/${product.slug}`} className="block w-full h-full">
           <Image
             src={getCloudinaryUrl(
-              product.variants[0]?.images[0] ||
+              product.variants?.[0]?.images?.[0] ||
               generateProductPlaceholder(product.name)
             )}
             alt={product.name}
@@ -152,7 +152,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
         </div>
 
         {/* Action Buttons */}
-        <div className="absolute top-2 right-2 flex flex-col space-y-2 z-10 opac it-0 group-hover:opacity-100 transition-opacity">
+        <div className="absolute top-2 right-2 flex flex-col space-y-2 z-10 opacity-0 group-hover:opacity-100 transition-opacity">
           <button
             onClick={handleWishlistToggle}
             className={`rounded-full p-2 shadow-sm transition-colors ${isItemsInWishlist

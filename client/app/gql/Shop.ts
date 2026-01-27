@@ -21,10 +21,21 @@ export const GET_SHOP_BY_SLUG = gql`
         id
         name
         slug
+        description
+        isNew
+        isFeatured
+        isTrending
+        isBestSeller
         averageRating
         reviewCount
+        category {
+          id
+          name
+          slug
+        }
         variants {
           id
+          sku
           price
           discountPrice
           images
@@ -34,3 +45,50 @@ export const GET_SHOP_BY_SLUG = gql`
     }
   }
 `;
+
+export const GET_SHOP_BY_ID = gql`
+  query GetShopById($id: String!) {
+    shopById(id: $id) {
+      id
+      name
+      slug
+      description
+      logo
+      email
+      phone
+      country
+      city
+      village
+      street
+      placeName
+      latitude
+      longitude
+      products {
+        id
+        name
+        slug
+        description
+        isNew
+        isFeatured
+        isTrending
+        isBestSeller
+        averageRating
+        reviewCount
+        category {
+          id
+          name
+          slug
+        }
+        variants {
+          id
+          sku
+          price
+          discountPrice
+          images
+          stock
+        }
+      }
+    }
+  }
+`;
+

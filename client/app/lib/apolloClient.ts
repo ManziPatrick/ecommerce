@@ -18,10 +18,35 @@ export const initializeApollo = (initialState = null) => {
     link: from([errorLink, httpLink]),
     cache: new InMemoryCache({
       typePolicies: {
+        Query: {
+          fields: {
+            shop: {
+              merge(existing, incoming) {
+                return incoming;
+              },
+            },
+            shopById: {
+              merge(existing, incoming) {
+                return incoming;
+              },
+            },
+          },
+        },
         Product: {
           fields: {
             variants: {
-              merge: true,
+              merge(existing, incoming) {
+                return incoming;
+              },
+            },
+          },
+        },
+        Shop: {
+          fields: {
+            products: {
+              merge(existing, incoming) {
+                return incoming;
+              },
             },
           },
         },

@@ -3,12 +3,14 @@ import { Chat, ChatMessage } from "@prisma/client";
 import { Server as SocketIOServer } from "socket.io";
 import { v2 as cloudinary } from "cloudinary";
 import { Readable } from "stream";
+import { OpenRouter } from "@openrouter/sdk";
+import prisma from "@/infra/database/database.config";
 
 export class ChatService {
   constructor(
     private chatRepository: ChatRepository,
     private io: SocketIOServer
-  ) {}
+  ) { }
 
   async createChat(userId: string): Promise<Chat> {
     const chat = await this.chatRepository.createChat(userId);
@@ -97,4 +99,60 @@ export class ChatService {
     this.io.to("admin").emit("chatStatusUpdated", chat);
     return chat;
   }
+
+  async chatWithAI(messages: { role: string; content: string }[]): Promise<string | null> {
+    try {
+      const userMessage = messages[messages.length - 1].content.toLowerCase();
+      console.log(`🤖 Chat request received: "${userMessage}"`);
+      
+      // 1. Fetch ALL necessary data for local processing
+      const [products, shops, categories] = await Promise.all([
+        prisma.product.findMany({
+          take: 50,
+          include: { variants: true, shop: true, category: true },
+        }),
+        prisma.shop.findMany({
+          take: 20,
+          select: { name: true, city: true, description: true }
+        }),
+        prisma.category.findMany({ select: { name: true } })
+      ]);
+
+      let response: string;
+
+      // 2. Logic-based response generation (Deterministic "macyemacye" Bot)
+      
+      if (userMessage.includes("shipping") || userMessage.includes("delivery") || userMessage.includes("fast")) {
+        response = "🚚 **MacyeMacye Delivery Info:** We offer free delivery in Kigali for orders over 50,000 RWF! Standard delivery usually takes 1-2 business days. For outside Kigali, rates depend on your location.";
+      } else if (userMessage.includes("return") || userMessage.includes("refund")) {
+        response = "🔙 **Return Policy:** You can return any unused item in its original packaging within 7 days of purchase. Contact support@macyemacye.com to start a return request.";
+      } else if (userMessage.includes("shop") || userMessage.includes("vendor") || userMessage.includes("where")) {
+        const shopNames = shops.slice(0, 5).map(s => `**${s.name}** (${s.city})`).join(", ");
+        response = `🏬 **Our Vendors:** We partner with top verified shops across Rwanda. Some featured ones include: ${shopNames}. You can browse all of them in our "Shops" section! ✨`;
+      } else if (userMessage.includes("product") || userMessage.includes("category") || userMessage.includes("have")) {
+        const cats = categories.map(c => c.name).join(", ");
+        const featured = products.filter(p => p.isFeatured).slice(0, 3).map(p => p.name).join(", ");
+        response = `🛍️ **Our Catalog:** We carry a wide range of products in: ${cats}.\n\nRight now, people are loving: **${featured}**. Is there something specific you're looking for?`;
+      } else {
+        // Specific Product Check
+        const foundProduct = products.find(p => userMessage.includes(p.name.toLowerCase()));
+        if (foundProduct) {
+          const price = foundProduct.variants[0]?.price;
+          response = `✨ **Found it!** The **${foundProduct.name}** is available from **${foundProduct.shop?.name}** for **${price?.toLocaleString()} RWF**. Would you like me to find more details for you?`;
+        } else if (userMessage.includes("help") || userMessage.includes("contact") || userMessage.includes("support") || userMessage.includes("human")) {
+          response = "☎️ **Support:** I'm here to help, but for complex issues you can reach our human team at **support@macyemacye.com** or call us at **+250 123 456 789**. 🇷🇼";
+        } else {
+           response = "Muraho! ✨ I'm your MacyeMacye assistant. I can help you find **products**, tell you about our **shops**, or explain our **shipping and return policies**. What can I help you with today? 🇷🇼";
+        }
+      }
+
+      console.log(`🤖 Bot response: ${response.substring(0, 50)}...`);
+      return response;
+      
+    } catch (error) {
+      console.error("Custom AI Engine Error:", error);
+      return "I'm having a little trouble looking that up on our site right now. Please try again or browse our categories! 🛍️";
+    }
+  }
 }
+

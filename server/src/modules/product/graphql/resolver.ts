@@ -107,6 +107,38 @@ export const productResolvers = {
         totalCount,
       };
     },
+    shops: async (_: any, __: any, context: Context) => {
+      console.log(`🔍 Fetching all shops`);
+      const shops = await context.prisma.shop.findMany({
+        include: {
+          _count: {
+            select: { products: true },
+          },
+        },
+        orderBy: { createdAt: 'desc' },
+      });
+      return shops;
+    },
+    shop: async (_: any, { slug }: { slug: string }, context: Context) => {
+      console.log(`🔍 Fetching shop by slug: "${slug}"`);
+      const shop = await context.prisma.shop.findUnique({
+        where: { slug },
+      });
+      if (!shop) {
+        throw new AppError(404, "Shop not found");
+      }
+      return shop;
+    },
+    shopById: async (_: any, { id }: { id: string }, context: Context) => {
+      console.log(`🔍 Fetching shop by ID: "${id}"`);
+      const shop = await context.prisma.shop.findUnique({
+        where: { id },
+      });
+      if (!shop) {
+        throw new AppError(404, "Shop not found");
+      }
+      return shop;
+    },
     product: async (_: any, { slug }: { slug: string }, context: Context) => {
       console.log(`🔍 GraphQL: Fetching product by slug: "${slug}"`);
       const product = await context.prisma.product.findUnique({
@@ -255,6 +287,19 @@ export const productResolvers = {
       if (!parent.shopId) return null;
       return context.prisma.shop.findUnique({
         where: { id: parent.shopId },
+      });
+    },
+  },
+
+  Shop: {
+    products: (parent: any, _: any, context: Context) => {
+      return context.prisma.product.findMany({
+        where: { shopId: parent.id },
+        include: {
+          variants: true,
+          reviews: true,
+          category: true,
+        },
       });
     },
   },

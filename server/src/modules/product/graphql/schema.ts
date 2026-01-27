@@ -38,6 +38,7 @@ const typeDefs = gql`
     placeName: String
     latitude: Float
     longitude: Float
+    products: [Product!]!
   }
 
   type ProductVariant {
@@ -113,6 +114,9 @@ const typeDefs = gql`
 
   type Query {
     products(first: Int, skip: Int, filters: ProductFilters): ProductConnection!
+    shops: [Shop!]!
+    shop(slug: String!): Shop
+    shopById(id: String!): Shop
     product(slug: String!): Product
     newProducts(first: Int, skip: Int): ProductConnection!
     featuredProducts(first: Int, skip: Int): ProductConnection!

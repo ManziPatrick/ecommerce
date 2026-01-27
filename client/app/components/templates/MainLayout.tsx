@@ -1,6 +1,7 @@
 "use client";
 import Footer from "../layout/Footer";
 import Navbar from "../layout/Navbar";
+import AIChatbot from "../chat/AIChatbot";
 
 export default function MainLayout({
   children,
@@ -14,6 +15,7 @@ export default function MainLayout({
         {children}
       </div>
       <Footer />
+      <AIChatbot />
     </main>
   );
 }

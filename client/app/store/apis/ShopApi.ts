@@ -9,6 +9,13 @@ export const shopApi = apiSlice.injectEndpoints({
             }),
             providesTags: ["Shop"],
         }),
+        getShopById: builder.query({
+            query: (id) => ({
+                url: `/shops/${id}`,
+                method: "GET",
+            }),
+            providesTags: (result, error, id) => [{ type: "Shop", id }],
+        }),
         updateShop: builder.mutation({
             query: ({ id, data }) => ({
                 url: `/shops/${id}`,
@@ -20,4 +27,4 @@ export const shopApi = apiSlice.injectEndpoints({
     }),
 });
 
-export const { useGetMyShopQuery, useUpdateShopMutation } = shopApi;
+export const { useGetMyShopQuery, useGetShopByIdQuery, useUpdateShopMutation } = shopApi;
