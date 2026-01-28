@@ -1,6 +1,6 @@
 "use client";
 import React, { useMemo } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
 import useStorage from "@/app/hooks/state/useStorage";
@@ -20,18 +20,33 @@ import {
   Section,
   ChartArea,
   Settings,
+  X,
 } from "lucide-react";
+import UnreadBadge from "../chat/UnreadBadge";
 
-const Sidebar = () => {
+interface SidebarProps {
+  isMobileOpen?: boolean;
+  setIsMobileOpen?: (open: boolean) => void;
+}
+
+const Sidebar: React.FC<SidebarProps> = ({ isMobileOpen, setIsMobileOpen }) => {
   const [isOpen, setIsOpen] = useStorage<boolean>(
     "sidebarOpen",
-    false,
+    true,
     "local"
   );
+  const [isDesktop, setIsDesktop] = React.useState(true);
   const pathname = usePathname();
   const router = useRouter();
   const [signout] = useSignOutMutation();
   const { user } = useAuth();
+
+  React.useEffect(() => {
+    const checkDesktop = () => setIsDesktop(window.innerWidth >= 768);
+    checkDesktop();
+    window.addEventListener("resize", checkDesktop);
+    return () => window.removeEventListener("resize", checkDesktop);
+  }, []);
 
   const sections = useMemo(() => {
     const isVendor = user?.role === "VENDOR";
@@ -70,9 +85,6 @@ const Sidebar = () => {
     ];
   }, [user]);
 
-  const prependDashboard = (href: string) =>
-    href.startsWith("/dashboard") ? href : `/dashboard${href}`;
-
   const handleSignOut = async () => {
     try {
       await signout().unwrap();
@@ -91,85 +103,114 @@ const Sidebar = () => {
     href: string;
     Icon: React.ElementType;
   }) => {
-    const fullHref = prependDashboard(href);
+    const fullHref = href.startsWith("/dashboard") ? href : `/dashboard${href}`;
     const isActive = pathname === fullHref;
 
     return (
       <Link
         href={fullHref}
         prefetch={false}
+        onClick={() => setIsMobileOpen?.(false)}
         className={`relative group flex items-center gap-4 px-4 py-3 rounded-xl transition-all duration-300 ${isActive
-          ? "bg-indigo-100 text-indigo-600 font-medium shadow-sm"
-          : "text-gray-600 hover:bg-gray-100"
+          ? "bg-indigo-600 text-white font-bold shadow-lg shadow-indigo-200"
+          : "text-gray-500 hover:bg-indigo-50 hover:text-indigo-600"
           }`}
       >
-        <motion.div whileHover={{ scale: 1.1 }}>
-          <Icon
-            className={`h-5 w-5 transition ${isActive ? "text-indigo-600" : "group-hover:text-black"
-              }`}
-          />
-        </motion.div>
-        {isOpen && <span className="text-sm">{name}</span>}
+        <div className="flex shrink-0">
+          <Icon size={20} className={isActive ? "text-white" : "group-hover:text-indigo-600"} />
+        </div>
+        <span className={`text-sm tracking-tight whitespace-nowrap ${(isOpen || isMobileOpen) ? "opacity-100" : "opacity-0 md:hidden"}`}>
+          {name}
+        </span>
+        {name === "Chats" && (
+          <div className="absolute top-2 right-2 text-white">
+            <UnreadBadge />
+          </div>
+        )}
       </Link>
     );
   };
 
+  const sidebarVariants = {
+    open: { width: 280, x: 0 },
+    closed: { width: 88, x: 0 },
+    mobileOpen: { x: 0, width: "100%", maxWidth: 300 },
+    mobileClosed: { x: "-100%", width: "100%", maxWidth: 300 }
+  };
+
   return (
-    <motion.aside
-      initial={{ width: 80 }}
-      animate={{
-        width: isOpen ? 260 : 80,
-        transition: { duration: 0.3, ease: "easeInOut" },
-      }}
-      className="bg-white border-r border-gray-200 shadow-lg min-h-fit flex flex-col p-4 justify-between md:w-auto w-full md:static fixed top-0 left-0 z-50"
-    >
-      <div>
-        <button
-          onClick={() => setIsOpen(!isOpen)}
-          className="p-2 flex items-center justify-end rounded-lg transition mb-4 w-full"
-        >
-          <PanelsRightBottom size={24} className="text-gray-700" />
-        </button>
+    <>
+      {/* Mobile Overlay */}
+      <AnimatePresence>
+        {isMobileOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setIsMobileOpen?.(false)}
+            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[90] md:hidden"
+          />
+        )}
+      </AnimatePresence>
 
-        {/* Navigation */}
-        <nav className="flex flex-col space-y-2">
-          {sections.map((section, idx) => (
-            <div key={section.title} className="mb-2">
-              {isOpen && (
-                <h3 className="text-xs font-medium uppercase tracking-wider text-gray-400 ml-4 mb-2">
-                  {section.title}
-                </h3>
-              )}
-              <div className="space-y-1">
-                {section.links.map((link) => (
-                  <SidebarLink
-                    key={link.name}
-                    name={link.name}
-                    href={link.href}
-                    Icon={link.icon}
-                  />
-                ))}
-              </div>
-              {idx < sections.length - 1 && (
-                <hr className="my-3 border-t border-gray-200" />
-              )}
+      <motion.aside
+        initial={false}
+        animate={isDesktop ? (isOpen ? "open" : "closed") : (isMobileOpen ? "mobileOpen" : "mobileClosed")}
+        variants={sidebarVariants}
+        className={`bg-white border-r border-gray-200 flex flex-col fixed inset-y-0 left-0 z-[100] md:static transition-shadow ${
+          isMobileOpen ? "shadow-2xl" : "shadow-xl sm:shadow-none"
+        }`}
+      >
+        <div className="flex flex-col h-full p-4">
+          <div className="flex items-center justify-between mb-8 px-2">
+            <div className={`flex items-center gap-3 ${(isOpen || isMobileOpen) ? "opacity-100" : "opacity-0 md:hidden"}`}>
+              <div className="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center text-white font-black italic">M</div>
+              <span className="font-black text-lg tracking-tighter text-gray-900">MACYE.</span>
             </div>
-          ))}
-        </nav>
-      </div>
+            <button
+              onClick={() => isMobileOpen ? setIsMobileOpen?.(false) : setIsOpen(!isOpen)}
+              className="p-2 hover:bg-gray-100 rounded-lg text-gray-500 transition-colors"
+            >
+              {isMobileOpen ? <X size={20} /> : <PanelsRightBottom size={20} />}
+            </button>
+          </div>
 
-      <div className="mt-6">
-        <button
-          onClick={handleSignOut}
-          className="w-full flex items-center justify-center gap-3 px-4 py-3 rounded-xl bg-red-50 hover:bg-red-100 transition-all duration-300 group"
-        >
-          <LogOut className="h-5 w-5 text-red-500 group-hover:text-red-600" />
-          {isOpen && (
-            <span className="text-sm font-medium text-red-600">Sign Out</span>
-          )}
-        </button>
-      </div>
-    </motion.aside>
+          <nav className="flex-1 overflow-y-auto overflow-x-hidden space-y-6 custom-scrollbar pr-1">
+            {sections.map((section) => (section.links.length > 0 && (
+              <div key={section.title}>
+                {(isOpen || isMobileOpen) && (
+                  <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 mb-3 px-4">
+                    {section.title}
+                  </h3>
+                )}
+                <div className="space-y-1">
+                  {section.links.map((link) => (
+                    <SidebarLink
+                      key={link.name}
+                      name={link.name}
+                      href={link.href}
+                      Icon={link.icon}
+                    />
+                  ))}
+                </div>
+              </div>
+            )))}
+          </nav>
+
+          <div className="pt-6 mt-6 border-t border-gray-100">
+            <button
+              onClick={handleSignOut}
+              className={`w-full flex items-center gap-4 px-4 py-3 rounded-xl text-gray-500 hover:bg-red-50 hover:text-red-600 transition-all group font-medium ${
+                 !(isOpen || isMobileOpen) ? "justify-center" : ""
+              }`}
+            >
+              <LogOut size={20} />
+              {(isOpen || isMobileOpen) && <span className="text-sm">Log Out</span>}
+            </button>
+          </div>
+        </div>
+      </motion.aside>
+    </>
   );
 };
 

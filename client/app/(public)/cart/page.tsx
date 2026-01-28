@@ -27,7 +27,7 @@ const formatVariantName = (item: any) => {
 
 const Cart = () => {
   const { control } = useForm();
-  const { data, isLoading } = useGetCartQuery({});
+  const { data, isLoading } = useGetCartQuery(undefined);
   const [removeFromCart] = useRemoveFromCartMutation();
   const cartItems = data?.cart?.cartItems || [];
   console.log("items => ", cartItems);

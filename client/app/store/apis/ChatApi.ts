@@ -61,6 +61,35 @@ export const chatApi = apiSlice.injectEndpoints({
         body: { status },
       }),
     }),
+    // POST /chat/shop/:shopId
+    createShopChat: builder.mutation({
+      query: (shopId: string) => ({
+        url: `/chat/shop/${shopId}`,
+        method: "POST",
+      }),
+    }),
+
+    // GET /chat/shop/:shopId/chats
+    getShopChats: builder.query({
+      query: (shopId: string) => `/chat/shop/${shopId}/chats`,
+    }),
+
+    // GET /chat/shop/all
+    getAllShopChats: builder.query({
+      query: (status?: string) => `/chat/shop/all${status ? `?status=${status}` : ""}`,
+    }),
+
+    // PATCH /chat/:chatId/read
+    markAsRead: builder.mutation({
+      query: (chatId: string) => ({
+        url: `/chat/${chatId}/read`,
+        method: "PATCH",
+      }),
+    }),
+    // GET /chat/unread/count
+    getUnreadCount: builder.query({
+      query: () => "/chat/unread/count",
+    }),
   }),
 });
 
@@ -71,4 +100,9 @@ export const {
   useCreateChatMutation,
   useSendMessageMutation,
   useUpdateChatStatusMutation,
+  useCreateShopChatMutation,
+  useGetShopChatsQuery,
+  useGetAllShopChatsQuery,
+  useMarkAsReadMutation,
+  useGetUnreadCountQuery,
 } = chatApi;

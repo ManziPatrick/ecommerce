@@ -83,16 +83,23 @@ const Dashboard = () => {
 
   return (
     <motion.div
-      className="p-4 sm:p-6 min-h-screen space-y-6"
-      initial={{ opacity: 0, y: -20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5, ease: "easeOut" }}
+      className="min-h-screen space-y-8"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.6 }}
     >
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-        <h1 className="text-xl sm:text-2xl font-semibold">
-          Dashboard Overview
-        </h1>
-        <div className="flex items-center justify-center gap-2 w-full sm:w-auto">
+      {/* Page Header */}
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+        <div className="space-y-1">
+          <h1 className="text-2xl sm:text-3xl font-black text-gray-900 tracking-tight">
+            Dashboard
+          </h1>
+          <p className="text-sm text-gray-400 font-medium tracking-tight">
+            Welcome back! Here's what's happening with your store today.
+          </p>
+        </div>
+        
+        <div className="flex items-center gap-3">
           <Controller
             name="timePeriod"
             control={control}
@@ -101,63 +108,82 @@ const Dashboard = () => {
                 onChange={field.onChange}
                 options={timePeriodOptions}
                 value={field.value}
-                label="Time Period"
-                className="w-full sm:min-w-[150px] sm:max-w-[200px]"
+                label="Filter"
+                className="w-full sm:min-w-[170px] bg-white shadow-sm border-gray-100"
               />
             )}
           />
         </div>
       </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+
+      {/* Stats Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         <StatsCard
-          title="Total Revenue"
+          title="Revenue"
           value={formatPrice(data?.revenueAnalytics?.totalRevenue || 0)}
-          percentage={data?.revenueAnalytics?.changes?.revenue}
-          caption="since last period"
+          percentage={data?.revenueAnalytics?.changes?.revenue || 0}
+          caption="Gross revenue"
           icon={<DollarSign className="w-5 h-5" />}
         />
         <StatsCard
-          title="Total Sales"
+          title="Sales"
           value={data?.orderAnalytics?.totalSales || 0}
-          percentage={data?.orderAnalytics?.changes?.sales}
-          caption="since last period"
+          percentage={data?.orderAnalytics?.changes?.sales || 0}
+          caption="Total orders"
           icon={<BarChart2 className="w-5 h-5" />}
         />
         <StatsCard
-          title="Total Interactions"
+          title="Traffic"
           value={data?.interactionAnalytics?.totalInteractions || 0}
           percentage={0}
-          caption="all interactions"
+          caption="Total views"
           icon={<LineChart className="w-5 h-5" />}
         />
         <StatsCard
-          title="Total Users"
+          title="Customers"
           value={data?.userAnalytics?.totalUsers || 0}
-          percentage={data?.userAnalytics?.changes?.users}
-          caption="since last period"
+          percentage={data?.userAnalytics?.changes?.users || 0}
+          caption="New signups"
           icon={<Users className="w-5 h-5" />}
         />
       </div>
-      <AreaChart
-        title="Revenue Trends"
-        data={data?.revenueAnalytics?.monthlyTrends?.revenue || []}
-        categories={data?.revenueAnalytics?.monthlyTrends?.labels || []}
-        color="#22c55e"
-        percentageChange={data?.revenueAnalytics?.changes?.revenue}
-      />
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <ListCard
-          title="Top Products"
-          viewAllLink="/shop"
-          items={topItems}
-          itemType="product"
+
+      {/* Primary Chart Area */}
+      <div className="grid grid-cols-1 gap-8">
+        <AreaChart
+          title="Revenue Performance"
+          data={data?.revenueAnalytics?.monthlyTrends?.revenue || []}
+          categories={data?.revenueAnalytics?.monthlyTrends?.labels || []}
+          color="#6366f1"
+          percentageChange={data?.revenueAnalytics?.changes?.revenue}
         />
-        <BarChart
-          title="Sales by Product"
-          data={salesByProduct.data}
-          categories={salesByProduct.categories}
-          color="#4CAF50"
-        />
+      </div>
+
+      {/* Secondary Grids */}
+      <div className="grid grid-cols-1 xl:grid-cols-2 gap-8 pb-12">
+        <div className="space-y-4">
+          <div className="flex items-center justify-between px-1">
+             <h3 className="text-xs font-black uppercase tracking-[0.2em] text-gray-400">Best Sellers</h3>
+          </div>
+          <ListCard
+            title="Top Products"
+            viewAllLink="/shop"
+            items={topItems}
+            itemType="product"
+          />
+        </div>
+
+        <div className="space-y-4">
+           <div className="flex items-center justify-between px-1">
+             <h3 className="text-xs font-black uppercase tracking-[0.2em] text-gray-400">Inventory Split</h3>
+          </div>
+          <BarChart
+            title="Sales Distribution"
+            data={salesByProduct.data}
+            categories={salesByProduct.categories}
+            color="#ec4899"
+          />
+        </div>
       </div>
     </motion.div>
   );

@@ -13,6 +13,9 @@ import FacebookIcon from "@/app/assets/icons/facebook.png";
 import TwitterIcon from "@/app/assets/icons/twitter.png";
 import Image from "next/image";
 
+import { AUTH_API_BASE_URL } from "@/app/lib/constants/config";
+import GoogleLogin from "@/app/components/auth/GoogleLogin";
+
 interface InputForm {
   name: string;
   email: string;
@@ -60,7 +63,7 @@ const Signup = () => {
   };
 
   const handleOAuthLogin = (provider: string) => {
-    window.location.href = `${process.env.NEXT_PUBLIC_API_URL}/api/v1/auth/${provider}`;
+    window.location.href = `${AUTH_API_BASE_URL}/auth/${provider}`;
   };
 
   return (
@@ -136,34 +139,32 @@ const Signup = () => {
             </div>
           </div>
 
-          <div className="space-y-2">
-            {[
-              {
-                provider: "google",
-                icon: GoogleIcon,
-                label: "Sign up with Google",
-              },
-              {
-                provider: "facebook",
-                icon: FacebookIcon,
-                label: "Sign up with Facebook",
-              },
-              {
-                provider: "twitter",
-                icon: TwitterIcon,
-                label: "Sign up with X",
-              },
-            ].map(({ provider, icon, label }) => (
-              <button
-                key={provider}
-                onClick={() => handleOAuthLogin(provider)}
-                className="w-full py-3 border-2 border-gray-100 bg-transparent text-black rounded-md font-medium hover:bg-gray-50
-                 transition-colors flex items-center justify-center gap-2 text-sm"
-              >
-                <Image width={20} height={20} src={icon} alt={provider} />
-                {label}
-              </button>
-            ))}
+          <div className="space-y-4">
+            <GoogleLogin />
+            <div className="space-y-2">
+              {[
+                {
+                  provider: "facebook",
+                  icon: FacebookIcon,
+                  label: "Sign up with Facebook",
+                },
+                {
+                  provider: "twitter",
+                  icon: TwitterIcon,
+                  label: "Sign up with X",
+                },
+              ].map(({ provider, icon, label }) => (
+                <button
+                  key={provider}
+                  onClick={() => handleOAuthLogin(provider)}
+                  className="w-full py-3 border-2 border-gray-100 bg-transparent text-black rounded-md font-medium hover:bg-gray-50
+                   transition-colors flex items-center justify-center gap-2 text-sm"
+                >
+                  <Image width={20} height={20} src={icon} alt={provider} />
+                  {label}
+                </button>
+              ))}
+            </div>
           </div>
         </main>
       </div>

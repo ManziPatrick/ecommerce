@@ -1,6 +1,7 @@
 'use client'
 import { cn } from "@/app/utils";
 import { TrendingUp, TrendingDown } from "lucide-react";
+import { motion } from "framer-motion";
 
 type StatsCardProps = {
   title: string;
@@ -20,37 +21,46 @@ const StatsCard = ({
   const isPositive = percentage >= 0;
 
   return (
-    <div className="text-black bg-white p-6 rounded-xl shadow-sm w-full flex flex-col gap-2 mb-6">
+    <motion.div 
+      whileHover={{ y: -4 }}
+      className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-all duration-300 w-full flex flex-col gap-3"
+    >
       <div className="flex items-center justify-between">
-        <h3 className="text-sm font-medium text-gray-800">{title}</h3>
-        {icon && (
-          <div className="text-indigo-600 bg-indigo-100 rounded-full p-2">
-            {icon}
-          </div>
-        )}
-      </div>
-
-      <div className="text-3xl font-bold">{value}</div>
-
-      <div className="flex items-center gap-1 text-sm">
+        <div className="flex items-center gap-3">
+          {icon && (
+            <div className="text-indigo-600 bg-indigo-50 rounded-xl p-2.5">
+              {icon}
+            </div>
+          )}
+          <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-tight">{title}</h3>
+        </div>
+        
         <div
           className={cn(
-            "flex items-center justify-center px-2 py-1 rounded-full text-xs font-medium",
+            "flex items-center px-2 py-1 rounded-lg text-[10px] font-bold tracking-tighter",
             isPositive
-              ? "bg-green-100 text-green-600"
-              : "bg-red-100 text-red-600"
+              ? "bg-emerald-50 text-emerald-600"
+              : "bg-rose-50 text-rose-600"
           )}
         >
           {isPositive ? (
-            <TrendingUp className="w-3 h-3 mr-1" />
+            <TrendingUp size={12} className="mr-1" />
           ) : (
-            <TrendingDown className="w-3 h-3 mr-1" />
+            <TrendingDown size={12} className="mr-1" />
           )}
           {Math.abs(percentage)}%
         </div>
-        {caption && <span className="text-gray-800">· {caption}</span>}
       </div>
-    </div>
+
+      <div className="flex flex-col">
+        <div className="text-2xl sm:text-3xl font-black text-gray-900 tracking-tight">{value}</div>
+        {caption && (
+          <p className="text-[11px] text-gray-400 font-medium mt-1">
+            {caption}
+          </p>
+        )}
+      </div>
+    </motion.div>
   );
 };
 

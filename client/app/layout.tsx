@@ -56,6 +56,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
+      <head>
+        <script src="https://accounts.google.com/gsi/client" async></script>
+      </head>
       <body className={`${poppins.variable} antialiased`}>
         <ClientProviders>{children}</ClientProviders>
       </body>

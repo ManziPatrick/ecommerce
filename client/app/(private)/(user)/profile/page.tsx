@@ -22,6 +22,7 @@ import { useState, useRef } from "react";
 import { useAppDispatch } from "@/app/store/hooks";
 import { addToast } from "@/app/store/slices/ToastSlice";
 import VendorRequestForm from "./components/VendorRequestForm";
+import UserAvatar from "@/app/components/atoms/UserAvatar";
 
 const UserProfile = () => {
   const { data, isLoading, error } = useGetMeQuery(undefined);
@@ -138,21 +139,11 @@ const UserProfile = () => {
                     className="hidden"
                     accept="image/*"
                   />
-                  {user.avatar ? (
-                    <Image
-                      src={getCloudinaryUrl(user.avatar, "w_200,h_200,c_fill,f_auto,q_auto")}
-                      width={96}
-                      height={96}
-                      alt="Profile"
-                      className="w-16 h-16 sm:w-24 sm:h-24 rounded-full border-4 border-white shadow-xl object-cover"
-                    />
-                  ) : (
-                    <div className="w-16 h-16 sm:w-24 sm:h-24 rounded-full border-4 border-white shadow-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center">
-                      <span className="text-white font-bold text-lg sm:text-xl">
-                        {getInitials(user.name || user.id)}
-                      </span>
-                    </div>
-                  )}
+                  <UserAvatar 
+                    user={user} 
+                    size={96} 
+                    className="w-16 h-16 sm:w-24 sm:h-24 border-4 border-white shadow-xl" 
+                  />
 
                   <button
                     onClick={triggerFileInput}

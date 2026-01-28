@@ -239,16 +239,16 @@ const ProductsDashboard = () => {
   ];
 
   return (
-    <div className="p-6">
-      <div className="flex justify-between items-center mb-4">
-        <div>
-          <h1 className="text-xl font-semibold">Product List</h1>
-          <p className="text-sm text-gray-500">Manage and view your products</p>
+    <div className="p-4 sm:p-6 lg:p-0 space-y-6">
+      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 bg-white p-6 rounded-2xl border border-gray-100 shadow-sm mt-4 sm:mt-0">
+        <div className="space-y-1">
+          <h1 className="text-2xl sm:text-3xl font-black text-gray-900 tracking-tight">Product List</h1>
+          <p className="text-sm text-gray-400 font-medium tracking-tight">Manage and view your inventory in real-time.</p>
         </div>
-        <div className="flex space-x-3">
+        <div className="flex flex-wrap items-center gap-3">
           <button
             onClick={() => setIsFileUploadOpen(!isFileUploadOpen)}
-            className="px-4 py-2 bg-[#5d8a02] text-white rounded-md flex items-center"
+            className="flex-1 sm:flex-none px-5 py-3 bg-emerald-50 text-emerald-700 rounded-xl flex items-center justify-center font-bold text-sm hover:bg-emerald-100 transition-all"
           >
             <Upload className="mr-2 h-4 w-4" />
             Excel Sheet
@@ -258,7 +258,7 @@ const ProductsDashboard = () => {
               setEditingProduct(null);
               setIsModalOpen(true);
             }}
-            className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700"
+            className="flex-1 sm:flex-none px-5 py-3 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 font-bold text-sm shadow-lg shadow-indigo-100 transition-all flex items-center justify-center whitespace-nowrap"
           >
             Create Product
           </button>

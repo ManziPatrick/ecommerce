@@ -100,4 +100,52 @@ export class AuthRepository {
       },
     });
   }
+
+  async findOrCreateSocialUser(data: {
+    email: string;
+    name: string;
+    googleId?: string;
+    facebookId?: string;
+    avatar?: string;
+  }) {
+    const user = await prisma.user.findUnique({
+      where: { email: data.email },
+    });
+
+    if (user) {
+      return prisma.user.update({
+        where: { email: data.email },
+        data: {
+          googleId: data.googleId || user.googleId,
+          facebookId: data.facebookId || user.facebookId,
+          avatar: data.avatar || user.avatar,
+        },
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          role: true,
+          avatar: true,
+        },
+      });
+    }
+
+    return prisma.user.create({
+      data: {
+        email: data.email,
+        name: data.name,
+        googleId: data.googleId,
+        facebookId: data.facebookId,
+        avatar: data.avatar,
+        role: ROLE.USER,
+      },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        role: true,
+        avatar: true,
+      },
+    });
+  }
 }

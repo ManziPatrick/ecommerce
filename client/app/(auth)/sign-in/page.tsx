@@ -11,6 +11,7 @@ import FacebookIcon from "@/app/assets/icons/facebook.png";
 import TwitterIcon from "@/app/assets/icons/twitter.png";
 import Image from "next/image";
 import { AUTH_API_BASE_URL } from "@/app/lib/constants/config";
+import GoogleLogin from "@/app/components/auth/GoogleLogin";
 
 interface InputForm {
   email: string;
@@ -147,34 +148,32 @@ const SignIn = () => {
             </div>
           </div>
 
-          <div className="space-y-2">
-            {[
-              {
-                provider: "google",
-                icon: GoogleIcon,
-                label: "Sign in with Google",
-              },
-              {
-                provider: "facebook",
-                icon: FacebookIcon,
-                label: "Sign in with Facebook",
-              },
-              {
-                provider: "twitter",
-                icon: TwitterIcon,
-                label: "Sign in with X",
-              },
-            ].map(({ provider, icon, label }) => (
-              <button
-                key={provider}
-                onClick={() => handleOAuthLogin(provider)}
-                className="w-full py-3 border-2 border-gray-100 bg-transparent text-black rounded-md font-medium hover:bg-gray-50
-                 transition-colors flex items-center justify-center gap-2 text-sm"
-              >
-                <Image width={20} height={20} src={icon} alt={provider} />
-                {label}
-              </button>
-            ))}
+          <div className="space-y-4">
+            <GoogleLogin />
+            <div className="space-y-2">
+              {[
+                {
+                  provider: "facebook",
+                  icon: FacebookIcon,
+                  label: "Sign in with Facebook",
+                },
+                {
+                  provider: "twitter",
+                  icon: TwitterIcon,
+                  label: "Sign in with X",
+                },
+              ].map(({ provider, icon, label }) => (
+                <button
+                  key={provider}
+                  onClick={() => handleOAuthLogin(provider)}
+                  className="w-full py-3 border-2 border-gray-100 bg-transparent text-black rounded-md font-medium hover:bg-gray-50
+                  transition-colors flex items-center justify-center gap-2 text-sm"
+                >
+                  <Image width={20} height={20} src={icon} alt={provider} />
+                  {label}
+                </button>
+              ))}
+            </div>
           </div>
         </main>
       </div>

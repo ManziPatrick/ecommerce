@@ -26,6 +26,17 @@ const nextConfig: NextConfig = {
       { protocol: "https", hostname: "store.storeimages.cdn-apple.com" },
       { protocol: "https", hostname: "via.placeholder.com" },
     ],
+    minimumCacheTTL: 60,
+    dangerouslyAllowSVG: true,
+    contentDispositionType: 'attachment',
+    // Re-enable optimization now that we're using placeholder images
+    unoptimized: false,
+  },
+  // Suppress logging for image optimization errors
+  logging: {
+    fetches: {
+      fullUrl: false,
+    },
   },
   webpack: (config) => {
     config.ignoreWarnings = [

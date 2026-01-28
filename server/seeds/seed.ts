@@ -27,8 +27,11 @@ async function getCloudinaryUrl(url: string, folder: string = "general") {
     uploadCache.set(url, result.secure_url);
     return result.secure_url;
   } catch (error: any) {
-    console.error(`❌ Failed to upload ${url}:`, error.message || error);
-    return url;
+    console.warn(`⚠️ Failed to upload ${url}, using placeholder instead`);
+    // Return a placeholder image instead of the broken URL
+    const placeholderUrl = "https://via.placeholder.com/800x600/6366f1/ffffff?text=Product+Image";
+    uploadCache.set(url, placeholderUrl);
+    return placeholderUrl;
   }
 }
 

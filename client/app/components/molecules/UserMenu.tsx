@@ -17,6 +17,7 @@ import useClickOutside from "@/app/hooks/dom/useClickOutside";
 import useEventListener from "@/app/hooks/dom/useEventListener";
 import { useAppDispatch } from "@/app/store/hooks";
 import { logout } from "@/app/store/slices/AuthSlice";
+import UserAvatar from "../atoms/UserAvatar";
 
 const UserMenu = ({ menuOpen, closeMenu, user }) => {
   const [signout] = useSignOutMutation();
@@ -88,12 +89,12 @@ const UserMenu = ({ menuOpen, closeMenu, user }) => {
     visible: {
       opacity: 1,
       y: 0,
-      transition: { duration: 0.15, ease: "easeOut" },
+      transition: { duration: 0.15 },
     },
     exit: {
       opacity: 0,
       y: -10,
-      transition: { duration: 0.1, ease: "easeIn" },
+      transition: { duration: 0.1 },
     },
   };
 
@@ -118,6 +119,18 @@ const UserMenu = ({ menuOpen, closeMenu, user }) => {
           }}
         >
           <div className="absolute top-[-8px] right-4 w-4 h-4 bg-white transform rotate-45 border-l border-t border-gray-100" />
+
+          <div className="px-4 py-4 border-b border-gray-100 bg-gray-50/30 flex items-center gap-3">
+            <UserAvatar user={user} size={40} />
+            <div className="flex flex-col overflow-hidden">
+              <span className="text-sm font-semibold text-gray-800 truncate">
+                {user?.name || "User"}
+              </span>
+              <span className="text-xs text-gray-500 truncate">
+                {user?.email}
+              </span>
+            </div>
+          </div>
 
           <div className="py-2 max-h-[calc(100vh-200px)] overflow-y-auto">
             {menuItems.map((section, sectionIndex) => {

@@ -1,7 +1,9 @@
 "use client";
 
 import { Controller } from "react-hook-form";
-import { LucideIcon } from "lucide-react";
+import { LucideIcon, Eye, EyeOff } from "lucide-react";
+import { useState } from "react";
+
 interface InputProps {
   label?: string;
   control: any;
@@ -27,6 +29,9 @@ const Input: React.FC<InputProps> = ({
   error,
   onChange,
 }) => {
+  const [showPassword, setShowPassword] = useState(false);
+  const isPassword = type === "password";
+
   return (
     <div className="relative w-full">
       {label && <label className="text-gray-700 font-medium">{label}</label>}
@@ -36,21 +41,32 @@ const Input: React.FC<InputProps> = ({
         control={control}
         rules={validation}
         render={({ field }) => (
-          <input
-            {...field}
-            type={type}
-            placeholder={placeholder}
-            className={`p-[14px] pl-3 pr-10 w-full border-b-2 border-gray-300 text-gray-800 placeholder:text-gray-600 mt-[6px] 
-              focus:outline-none focus:border-gray-700 ${className}`}
-            onChange={(e) => {
-              field.onChange(e);
-              if (onChange) onChange(e);
-            }}
-          />
+          <div className="relative">
+            <input
+              {...field}
+              type={isPassword ? (showPassword ? "text" : "password") : type}
+              placeholder={placeholder}
+              className={`p-[14px] pl-3 pr-12 w-full border-b-2 border-gray-300 text-gray-800 placeholder:text-gray-600 mt-[6px] 
+                focus:outline-none focus:border-gray-700 ${className}`}
+              onChange={(e) => {
+                field.onChange(e);
+                if (onChange) onChange(e);
+              }}
+            />
+            {isPassword && (
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 mt-1 p-1 text-gray-500 hover:text-gray-700"
+              >
+                {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+              </button>
+            )}
+          </div>
         )}
       />
 
-      {Icon && (
+      {Icon && !isPassword && (
         <div className="absolute top-[63%] right-3 transform -translate-y-1/2">
           <Icon className="w-[22px] h-[22px] text-gray-800" />
         </div>

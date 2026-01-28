@@ -168,14 +168,19 @@ const AnalyticsDashboard = () => {
 
   return (
     <motion.div
-      className="p-4 min-h-screen space-y-6"
-      initial={{ opacity: 0, y: -20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5, ease: "easeOut" }}
+      className="min-h-screen space-y-8"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.6 }}
     >
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-semibold">Analytics Dashboard</h1>
-        <div className="flex items-center gap-4">
+      {/* Page Header */}
+      <div className="flex flex-col xl:flex-row xl:items-end justify-between gap-6 bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
+        <div className="space-y-1">
+          <h1 className="text-2xl sm:text-3xl font-black text-gray-900 tracking-tight">Analytics Dashboard</h1>
+          <p className="text-sm text-gray-400 font-medium tracking-tight">Deep dive into your store's performance metrics.</p>
+        </div>
+        
+        <div className="flex flex-wrap items-center gap-3">
           <Controller
             name="timePeriod"
             control={control}
@@ -184,8 +189,8 @@ const AnalyticsDashboard = () => {
                 onChange={field.onChange}
                 options={timePeriodOptions}
                 value={field.value}
-                label="Time Period"
-                className="min-w-[150px] max-w-[200px]"
+                label="Period"
+                className="w-full sm:w-[150px]"
               />
             )}
           />
@@ -198,178 +203,151 @@ const AnalyticsDashboard = () => {
                 options={yearOptions}
                 value={field.value ?? "all"}
                 label="Year"
-                className="min-w-[150px] max-w-[200px]"
+                className="w-full sm:w-[120px]"
                 disabled={useCustomRange}
               />
             )}
           />
-          <DateRangePicker
-            label="Custom Date Range"
-            control={control}
-            startName="startDate"
-            endName="endDate"
-          />
-          <Dropdown
-            options={exportTypeOptions}
-            value={exportType}
-            onChange={(value) => value !== null && setExportType(value)}
-            label="Export Type"
-            className="min-w-[150px] max-w-[200px]"
-          />
-          <Dropdown
-            options={exportFormatOptions}
-            value={exportFormat}
-            onChange={(value) => setExportType(value ?? "")}
-            label="Export Format"
-            className="min-w-[150px] max-w-[200px]"
-          />
-          <button
-            className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:bg-blue-400"
-            onClick={handleExport}
-            disabled={isExporting}
-          >
-            <Download className="w-5 h-5" />
-            {isExporting ? "Exporting..." : "Export"}
-          </button>
+          <div className="w-full sm:w-auto">
+            <DateRangePicker
+              label="Custom Range"
+              control={control}
+              startName="startDate"
+              endName="endDate"
+            />
+          </div>
+          
+          <div className="flex items-center gap-2 w-full sm:w-auto">
+             <Dropdown
+              options={exportFormatOptions}
+              value={exportFormat}
+              onChange={(value) => setExportType(value ?? "")}
+              label="Format"
+              className="flex-1 sm:w-[110px]"
+            />
+            <button
+              className="flex items-center justify-center gap-2 px-4 py-3 bg-gray-900 text-white rounded-xl hover:bg-gray-800 disabled:bg-gray-300 transition-all font-bold text-sm shadow-lg shadow-gray-200"
+              onClick={handleExport}
+              disabled={isExporting}
+            >
+              {isExporting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
+              <span>Export</span>
+            </button>
+          </div>
         </div>
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2">
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6">
         <StatsCard
-          title="Total Revenue"
+          title="Revenue"
           value={formatPrice(data?.revenueAnalytics?.totalRevenue || 0)}
           percentage={data?.revenueAnalytics?.changes?.revenue}
-          caption="since last period"
+          caption="Gross earnings"
           icon={<DollarSign className="w-5 h-5" />}
         />
         <StatsCard
-          title="Total Orders"
+          title="Orders"
           value={data?.orderAnalytics?.totalOrders || 0}
           percentage={data?.orderAnalytics?.changes?.orders}
-          caption="since last period"
+          caption="Total completed"
           icon={<ShoppingCart className="w-5 h-5" />}
         />
         <StatsCard
-          title="Total Sales"
+          title="Conversion"
           value={data?.orderAnalytics?.totalSales || 0}
           percentage={data?.orderAnalytics?.changes?.sales}
-          caption="since last period"
+          caption="Success rate"
           icon={<BarChart2 className="w-5 h-5" />}
         />
         <StatsCard
-          title="Average Order Value"
+          title="Value"
           value={formatPrice(data?.orderAnalytics?.averageOrderValue || 0)}
           percentage={data?.orderAnalytics?.changes?.averageOrderValue}
-          caption="since last period"
+          caption="Avg. per order"
           icon={<CreditCard className="w-5 h-5" />}
         />
-        <StatsCard
-          title="Total Users"
-          value={data?.userAnalytics?.totalUsers || 0}
-          percentage={data?.userAnalytics?.changes?.users}
-          caption="since last period"
-          icon={<Users className="w-5 h-5" />}
-        />
-        <StatsCard
-          title="Lifetime Value"
-          value={formatPrice(data?.userAnalytics?.lifetimeValue || 0)}
-          percentage={data?.userAnalytics?.repeatPurchaseRate}
-          caption="repeat purchase rate"
-          icon={<DollarSign className="w-5 h-5" />}
-        />
-        <StatsCard
-          title="Engagement Score"
-          value={data?.userAnalytics?.engagementScore?.toFixed(2) || 0}
-          percentage={data?.userAnalytics?.repeatPurchaseRate}
-          caption="repeat purchase rate"
-          icon={<BarChart2 className="w-5 h-5" />}
-        />
-        <StatsCard
-          title="Total Interactions"
-          value={data?.interactionAnalytics?.totalInteractions || 0}
-          percentage={0} // ! HARD CODED
-          caption="all interactions"
-          icon={<BarChart2 className="w-5 h-5" />}
-        />
       </div>
 
-      {/* Charts */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-2">
-        <AreaChart
-          title="Order Trends"
-          data={data?.revenueAnalytics?.monthlyTrends?.orders || []}
-          categories={data?.revenueAnalytics?.monthlyTrends?.labels || []}
-          color="#ec4899"
-          percentageChange={data?.orderAnalytics?.changes?.orders}
-        />
-        <AreaChart
-          title="Revenue Trends"
-          data={data?.revenueAnalytics?.monthlyTrends?.revenue || []}
-          categories={data?.revenueAnalytics?.monthlyTrends?.labels || []}
-          color="#22c55e"
-          percentageChange={data?.revenueAnalytics?.changes?.revenue}
-        />
-        <AreaChart
-          title="Sales Trends"
-          data={data?.revenueAnalytics?.monthlyTrends?.sales || []}
-          categories={data?.revenueAnalytics?.monthlyTrends?.labels || []}
-          color="#3b82f6"
-          percentageChange={data?.orderAnalytics?.changes?.sales}
-        />
-        <AreaChart
-          title="User Trends"
-          data={data?.revenueAnalytics?.monthlyTrends?.users || []}
-          categories={data?.revenueAnalytics?.monthlyTrends?.labels || []}
-          color="#f59e0b"
-          percentageChange={data?.userAnalytics?.changes?.users}
-        />
-        <AreaChart
-          title="Interaction Trends (Views)"
-          data={data?.userAnalytics?.interactionTrends?.views || []}
-          categories={data?.userAnalytics?.interactionTrends?.labels || []}
-          color="#8b5cf6"
-          percentageChange={data?.interactionAnalytics?.changes?.views}
-        />
-        <DonutChart
-          title="Top 10 Products by Quantity"
-          data={mostSoldProducts.data}
-          labels={mostSoldProducts.labels}
-        />
-        <DonutChart
-          title="Interactions by Type"
-          data={interactionByType.data}
-          labels={interactionByType.labels}
-        />
-        <RevenueOverTimeChart startDate="2023-01-01" endDate="2023-12-31" />
+      {/* Charts Section */}
+      <div className="space-y-8">
+         <div className="flex items-center gap-3 px-1">
+             <div className="h-4 w-1 bg-indigo-600 rounded-full" />
+             <h3 className="text-xs font-black uppercase tracking-[0.2em] text-gray-400">Growth Trends</h3>
+          </div>
+          
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <AreaChart
+              title="Order Volume"
+              data={data?.revenueAnalytics?.monthlyTrends?.orders || []}
+              categories={data?.revenueAnalytics?.monthlyTrends?.labels || []}
+              color="#ec4899"
+              percentageChange={data?.orderAnalytics?.changes?.orders}
+            />
+            <AreaChart
+              title="Revenue Flow"
+              data={data?.revenueAnalytics?.monthlyTrends?.revenue || []}
+              categories={data?.revenueAnalytics?.monthlyTrends?.labels || []}
+              color="#10b981"
+              percentageChange={data?.revenueAnalytics?.changes?.revenue}
+            />
+            <AreaChart
+              title="Sales Performance"
+              data={data?.revenueAnalytics?.monthlyTrends?.sales || []}
+              categories={data?.revenueAnalytics?.monthlyTrends?.labels || []}
+              color="#3b82f6"
+              percentageChange={data?.orderAnalytics?.changes?.sales}
+            />
+            <AreaChart
+              title="User Acquisition"
+              data={data?.revenueAnalytics?.monthlyTrends?.users || []}
+              categories={data?.revenueAnalytics?.monthlyTrends?.labels || []}
+              color="#f59e0b"
+              percentageChange={data?.userAnalytics?.changes?.users}
+            />
+          </div>
       </div>
 
-      {/* Lists */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2Gap-2">
-        <ListCard
-          title="Top Products"
-          viewAllLink="/shop"
-          items={topItems}
-          itemType="product"
-        />
-        <ListCard
-          title="Top Users"
-          viewAllLink="/dashboard/users"
-          items={topUsers}
-          itemType="user"
-        />
-        <ListCard
-          title="Most Viewed Products"
-          viewAllLink="/shop"
-          items={mostViewedProducts}
-          itemType="product"
-        />
-        <BarChart
-          title="Sales by Product"
-          data={salesByProduct.data}
-          categories={salesByProduct.categories}
-          color="#4CAF50"
-        />
+      {/* Deep Insights */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-8 pb-12">
+        <div className="space-y-4">
+          <div className="flex items-center gap-3 px-1">
+             <div className="h-4 w-1 bg-emerald-500 rounded-full" />
+             <h3 className="text-xs font-black uppercase tracking-[0.2em] text-gray-400">Demographics</h3>
+          </div>
+          <ListCard
+            title="Top Customers"
+            viewAllLink="/dashboard/users"
+            items={topUsers}
+            itemType="user"
+          />
+        </div>
+
+        <div className="space-y-4">
+          <div className="flex items-center gap-3 px-1">
+             <div className="h-4 w-1 bg-rose-500 rounded-full" />
+             <h3 className="text-xs font-black uppercase tracking-[0.2em] text-gray-400">Inventory Heatmap</h3>
+          </div>
+          <ListCard
+            title="Most Viewed"
+            viewAllLink="/shop"
+            items={mostViewedProducts}
+            itemType="product"
+          />
+        </div>
+
+        <div className="space-y-4 lg:col-span-2 xl:col-span-1">
+           <div className="flex items-center gap-3 px-1">
+             <div className="h-4 w-1 bg-blue-500 rounded-full" />
+             <h3 className="text-xs font-black uppercase tracking-[0.2em] text-gray-400">Product Share</h3>
+          </div>
+          <BarChart
+            title="Distribution"
+            data={salesByProduct.data}
+            categories={salesByProduct.categories}
+            color="#ec4899"
+          />
+        </div>
       </div>
     </motion.div>
   );

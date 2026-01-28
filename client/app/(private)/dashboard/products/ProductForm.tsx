@@ -49,12 +49,12 @@ const ProductForm: React.FC<ProductFormProps> = ({
       onSubmit={handleSubmit(onSubmit)}
       className="space-y-6"
     >
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
         <div className="relative">
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-xs font-black uppercase tracking-widest text-gray-400 mb-2">
             Product Name
           </label>
-          <div className="relative">
+          <div className="relative group">
             <Controller
               name="name"
               control={control}
@@ -63,22 +63,22 @@ const ProductForm: React.FC<ProductFormProps> = ({
                 <input
                   {...field}
                   type="text"
-                  className="pl-10 pr-4 py-3 w-full border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none transition-all duration-200"
-                  placeholder="Amazing Product"
+                  className="pl-11 pr-4 py-3.5 w-full border border-gray-200 rounded-2xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 focus:outline-none transition-all duration-200 bg-gray-50/30 group-hover:bg-white"
+                  placeholder="e.g. Premium Leather Jacket"
                 />
               )}
             />
-            <Tag className="absolute left-3 top-3.5 text-gray-400" size={18} />
+            <Tag className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-hover:text-indigo-500 transition-colors" size={18} />
           </div>
           {errors.name && (
-            <p className="text-red-500 text-xs mt-1 pl-10">
-              {errors.name.message}
+            <p className="text-rose-500 text-[10px] font-bold mt-1.5 ml-1 flex items-center gap-1 uppercase tracking-wider">
+              <span className="w-1 h-1 bg-rose-500 rounded-full" /> {errors.name.message}
             </p>
           )}
         </div>
 
         <div className="relative">
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-xs font-black uppercase tracking-widest text-gray-400 mb-2">
             Category
           </label>
           <Controller
@@ -93,28 +93,28 @@ const ProductForm: React.FC<ProductFormProps> = ({
                 }}
                 options={categories}
                 value={field.value}
-                label="e.g. Clothing"
-                className="py-[14px]"
+                label="Select Category"
+                className="py-[14px] rounded-2xl bg-gray-50/30 hover:bg-white transition-all border-gray-200"
               />
             )}
           />
           {errors.categoryId && (
-            <p className="text-red-500 text-xs mt-1">
-              {errors.categoryId.message}
-            </p>
+             <p className="text-rose-500 text-[10px] font-bold mt-1.5 ml-1 flex items-center gap-1 uppercase tracking-wider">
+               <span className="w-1 h-1 bg-rose-500 rounded-full" /> {errors.categoryId.message}
+             </p>
           )}
         </div>
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
-          Product Flags
+        <label className="block text-xs font-black uppercase tracking-widest text-gray-400 mb-3">
+          Product Badges
         </label>
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
           <CheckBox
             name="isNew"
             control={control}
-            label="New Product"
+            label="New Arrival"
             defaultValue={false}
           />
           <CheckBox
@@ -139,7 +139,7 @@ const ProductForm: React.FC<ProductFormProps> = ({
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">
+        <label className="block text-xs font-black uppercase tracking-widest text-gray-400 mb-2">
           Description
         </label>
         <Controller
@@ -148,9 +148,9 @@ const ProductForm: React.FC<ProductFormProps> = ({
           render={({ field }) => (
             <textarea
               {...field}
-              className="px-4 py-3 w-full border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none transition-all duration-200"
-              placeholder="Describe your amazing product here..."
-              rows={3}
+              className="px-5 py-4 w-full border border-gray-200 rounded-2xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 focus:outline-none transition-all duration-200 bg-gray-50/30 hover:bg-white resize-none"
+              placeholder="Tell your customers about this product..."
+              rows={4}
             />
           )}
         />

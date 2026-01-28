@@ -19,16 +19,22 @@ export class SocketManager {
     this.io.on("connection", (socket: Socket) => {
       console.log("New client connected:", socket.id);
 
-      // * This listens when a client joins a room
-      socket.on("joinChat", (chatId: string) => {
-        socket.join(`chat:${chatId}`);
-        console.log(`Client ${socket.id} joined chat:${chatId}`);
+      // Generic Room Joining (Chat, User, Vendor, Admin)
+      socket.on("joinRoom", (roomName: string) => {
+        socket.join(roomName);
+        console.log(`Client ${socket.id} joined room: ${roomName}`);
       });
 
-      // * This listens when a client joins the admin room
+      // Legacy support for joinChat (used by old frontend components)
+      socket.on("joinChat", (chatId: string) => {
+        socket.join(`chat:${chatId}`);
+        console.log(`Client ${socket.id} joined chat:${chatId} (Legacy)`);
+      });
+
+      // Legacy support for joinAdmin
       socket.on("joinAdmin", () => {
         socket.join("admin");
-        console.log(`Client ${socket.id} joined admin room`);
+        console.log(`Client ${socket.id} joined admin room (Legacy)`);
       });
 
       // * This listens when a client makes a call
@@ -45,14 +51,6 @@ export class SocketManager {
         console.log(`Call answer sent to ${to} for chat:${chatId}`);
       });
 
-      // * This listens when a client sends an ICE(interactive connection establishment) candidate => used to establish a peer connection
-      /**
-       * 
-        When a client wants to establish a connection with a remote peer, 
-        it generates multiple ICE candidates, 
-        which can include: Host candidates, SRFLX (Server Reflexive) candidates, and PRFLX (Peer Reflexive) candidates. 
-        These candidates are then sent to the other peer, which uses them to establish a connection.
-       */
       socket.on("iceCandidate", ({ chatId, candidate, to }) => {
         console.log("candidate => ", candidate);
         socket.to(to).emit("iceCandidate", { candidate });

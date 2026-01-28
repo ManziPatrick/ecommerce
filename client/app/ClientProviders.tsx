@@ -7,6 +7,8 @@ import Toast from "./components/feedback/Toast";
 import AuthProvider from "./components/HOC/AuthProvider";
 import TopLoadingBar from "./components/feedback/TopLoadingBar";
 import ChatBot from "./components/chat/ChatBot";
+import NotificationToast from "./components/chat/NotificationToast";
+import GoogleOneTap from "./components/auth/GoogleOneTap";
 import { useMemo } from "react";
 
 export default function ClientProviders({
@@ -23,6 +25,8 @@ export default function ClientProviders({
         <AuthProvider>{children}</AuthProvider>
         {process.env.NODE_ENV !== "test" && <Toast />}
         <ChatBot />
+        <NotificationToast />
+        <GoogleOneTap />
       </Provider>
     </ApolloProvider>
   );

@@ -187,4 +187,40 @@ export class AuthService {
 
     return { user, newAccessToken, newRefreshToken };
   }
+
+  async verifyGoogleToken(idToken: string): Promise<AuthResponse> {
+    const { OAuth2Client } = await import("google-auth-library");
+    const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+
+    try {
+      const ticket = await client.verifyIdToken({
+        idToken,
+        audience: process.env.GOOGLE_CLIENT_ID,
+      });
+
+      const payload = ticket.getPayload();
+      if (!payload || !payload.email) {
+        throw new BadRequestError("Invalid Google token payload");
+      }
+
+      const user = await this.authRepository.findOrCreateSocialUser({
+        email: payload.email,
+        name: payload.name || "Google User",
+        googleId: payload.sub,
+        avatar: payload.picture,
+      });
+
+      const accessToken = tokenUtils.generateAccessToken(user.id);
+      const refreshToken = tokenUtils.generateRefreshToken(user.id);
+
+      return {
+        user,
+        accessToken,
+        refreshToken,
+      };
+    } catch (error: any) {
+      logger.error("Google token verification failed:", error.message);
+      throw new BadRequestError("Google authentication failed");
+    }
+  }
 }

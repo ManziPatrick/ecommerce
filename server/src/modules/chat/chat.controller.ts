@@ -6,7 +6,7 @@ import { makeLogsService } from "../logs/logs.factory";
 
 export class ChatController {
   private logsService = makeLogsService();
-  constructor(private chatService: ChatService) {}
+  constructor(private chatService: ChatService) { }
 
   getChat = asyncHandler(async (req: Request, res: Response) => {
     const { id } = req.params;
@@ -79,6 +79,99 @@ export class ChatController {
 
     this.logsService.info("Chat created", {
       userId,
+    });
+  });
+
+  // Create or get shop chat
+  createShopChat = asyncHandler(async (req: Request, res: Response) => {
+    if (!req.user) {
+      throw new Error("User not found");
+    }
+    const userId = req.user.id;
+    const { shopId } = req.params;
+
+    const chat = await this.chatService.createShopChat(userId, shopId);
+
+    sendResponse(res, 200, {
+      data: { chat },
+      message: "Shop chat created successfully",
+    });
+
+    this.logsService.info("Shop chat created", {
+      userId,
+      shopId,
+    });
+  });
+
+  // Get chats for a shop (vendor only)
+  getShopChats = asyncHandler(async (req: Request, res: Response) => {
+    if (!req.user) {
+      throw new Error("User not found");
+    }
+    const { shopId } = req.params;
+
+    const chats = await this.chatService.getShopChats(shopId);
+
+    sendResponse(res, 200, {
+      data: { chats },
+      message: "Shop chats fetched successfully",
+    });
+
+    this.logsService.info("Shop chats fetched", {
+      userId: req.user.id,
+      shopId,
+    });
+  });
+
+  // Get all shop chats (admin only)
+  getAllShopChats = asyncHandler(async (req: Request, res: Response) => {
+    if (!req.user) {
+      throw new Error("User not found");
+    }
+    const { status } = req.query;
+
+    const chats = await this.chatService.getAllShopChats(
+      status as "OPEN" | "RESOLVED"
+    );
+
+    sendResponse(res, 200, {
+      data: { chats },
+      message: "All shop chats fetched successfully",
+    });
+
+    this.logsService.info("All shop chats fetched", {
+      userId: req.user.id,
+    });
+  });
+
+  // Mark messages as read
+  markAsRead = asyncHandler(async (req: Request, res: Response) => {
+    if (!req.user) {
+      throw new Error("User not found");
+    }
+    const { chatId } = req.params;
+    const userId = req.user.id;
+
+    const count = await this.chatService.markMessagesAsRead(chatId, userId);
+
+    sendResponse(res, 200, {
+      data: { markedCount: count },
+      message: "Messages marked as read",
+    });
+  });
+
+  // Get unread message count
+  getUnreadCount = asyncHandler(async (req: Request, res: Response) => {
+    if (!req.user) {
+      throw new Error("User not found");
+    }
+    const userId = req.user.id;
+
+    const count = await this.chatService.getUnreadCount(userId);
+
+    sendResponse(res, 200, {
+      data: { unreadCount: count },
+      message: "Unread count fetched successfully",
     });
   });
 

@@ -175,5 +175,93 @@ export const configureChatRoutes = (io: SocketIOServer) => {
    */
   router.post("/ai", chatController.chatWithAI);
 
+  /**
+   * @swagger
+   * /chats/shop/{shopId}:
+   *   post:
+   *     summary: Create or get shop chat
+   *     description: Creates a new chat with a shop or returns existing one
+   *     security:
+   *       - bearerAuth: []
+   *     parameters:
+   *       - in: path
+   *         name: shopId
+   *         required: true
+   *         schema:
+   *           type: string
+   *     responses:
+   *       200:
+   *         description: Shop chat created/retrieved successfully.
+   */
+  router.post("/shop/:shopId", protect, chatController.createShopChat);
+
+  /**
+   * @swagger
+   * /chats/shop/{shopId}/chats:
+   *   get:
+   *     summary: Get all chats for a shop
+   *     description: Get all customer chats for a specific shop (vendor only)
+   *     security:
+   *       - bearerAuth: []
+   *     parameters:
+   *       - in: path
+   *         name: shopId
+   *         required: true
+   *         schema:
+   *           type: string
+   *     responses:
+   *       200:
+   *         description: Shop chats retrieved successfully.
+   */
+  router.get("/shop/:shopId/chats", protect, chatController.getShopChats);
+
+  /**
+   * @swagger
+   * /chats/shop/all:
+   *   get:
+   *     summary: Get all shop chats (admin only)
+   *     description: Get all shop chats across the platform for admin oversight
+   *     security:
+   *       - bearerAuth: []
+   *     responses:
+   *       200:
+   *         description: All shop chats retrieved successfully.
+   */
+  router.get("/shop/all", protect, chatController.getAllShopChats);
+
+  /**
+   * @swagger
+   * /chats/{chatId}/read:
+   *   patch:
+   *     summary: Mark messages as read
+   *     description: Mark all unread messages in a chat as read
+   *     security:
+   *       - bearerAuth: []
+   *     parameters:
+   *       - in: path
+   *         name: chatId
+   *         required: true
+   *         schema:
+   *           type: string
+   *     responses:
+   *       200:
+   *         description: Messages marked as read.
+   */
+  router.patch("/:chatId/read", protect, chatController.markAsRead);
+
+  /**
+   * @swagger
+   * /chats/unread/count:
+   *   get:
+   *     summary: Get unread message count
+   *     description: Get total unread message count for current user
+   *     security:
+   *       - bearerAuth: []
+   *     responses:
+   *       200:
+   *         description: Unread count retrieved successfully.
+   */
+  router.get("/unread/count", protect, chatController.getUnreadCount);
+
   return router;
 };

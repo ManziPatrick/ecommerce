@@ -7,6 +7,7 @@ import { Product } from "@/app/types/productTypes";
 import { Palette, Ruler, Info, Package, Check, X, Store, Mail, Phone, MapPin, Navigation, ChevronDown, ChevronUp } from "lucide-react";
 import { motion } from "framer-motion";
 import Link from "next/link";
+import ShopChatButton from "@/app/components/chat/ShopChatButton";
 
 interface ProductInfoProps {
   id: string;
@@ -49,11 +50,10 @@ const ProductInfo: React.FC<ProductInfoProps> = ({
       return;
     }
     try {
-      const res = await addToCart({
+      await addToCart({
         variantId: selectedVariant.id,
         quantity: 1,
-      });
-      console.log(res);
+      }).unwrap();
       showToast("Product added to cart", "success");
     } catch (error: any) {
       showToast(error.data?.message || "Failed to add to cart", "error");
@@ -135,6 +135,23 @@ const ProductInfo: React.FC<ProductInfoProps> = ({
       stone: "#78716c",
     };
     return colorMap[colorName.toLowerCase()] || "#6b7280";
+  };
+
+  const handleBuyNow = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    if (!selectedVariant) {
+      showToast("Please select a valid variant", "error");
+      return;
+    }
+    try {
+      await addToCart({
+        variantId: selectedVariant.id,
+        quantity: 1,
+      }).unwrap();
+      window.location.href = "/checkout";
+    } catch (error: any) {
+      showToast(error.data?.message || "Failed to initiate buy now", "error");
+    }
   };
 
   return (
@@ -430,9 +447,19 @@ const ProductInfo: React.FC<ProductInfoProps> = ({
                     shop.name.charAt(0).toUpperCase()
                   )}
                 </div>
-                <div>
+                <div className="flex-1">
                   <h4 className="font-bold text-gray-900">{shop.name}</h4>
                   <p className="text-xs text-gray-500 line-clamp-1">{shop.description || "Vendor on MacyeMacye"}</p>
+                </div>
+
+                <div className="shrink-0 scale-90 sm:scale-100">
+                  <ShopChatButton 
+                    shopId={shop.id} 
+                    shopName={shop.name}
+                    shopLogo={shop.logo || undefined}
+                    productName={name}
+                    variant="compact"
+                  />
                 </div>
               </div>
 
@@ -488,6 +515,7 @@ const ProductInfo: React.FC<ProductInfoProps> = ({
             ? "bg-gray-400 cursor-not-allowed"
             : "bg-indigo-600 hover:bg-indigo-700 shadow-lg hover:shadow-xl transform hover:scale-[1.02]"
             }`}
+          id="add-to-cart-button"
         >
           {isLoading ? (
             <div className="flex items-center justify-center gap-2">
@@ -501,11 +529,13 @@ const ProductInfo: React.FC<ProductInfoProps> = ({
           )}
         </button>
         <button
-          disabled={!stock || !selectedVariant}
-          className={`w-full py-3 sm:py-4 text-sm sm:text-base font-semibold border-2 rounded-xl transition-all duration-300 ${stock && selectedVariant
+          disabled={!stock || !selectedVariant || isLoading}
+          onClick={handleBuyNow}
+          className={`w-full py-3 sm:py-4 text-sm sm:text-base font-semibold border-2 rounded-xl transition-all duration-300 ${stock && selectedVariant && !isLoading
             ? "border-indigo-600 text-indigo-600 hover:bg-indigo-50 hover:shadow-lg transform hover:scale-[1.02]"
             : "border-gray-300 text-gray-400 cursor-not-allowed"
             }`}
+          id="buy-now-button"
         >
           Buy Now
         </button>

@@ -44,6 +44,7 @@ router.get(
     res.redirect(env === "production" ? CLIENT_URL_PROD : CLIENT_URL_DEV);
   }
 );
+router.post("/google/verify", authController.verifyGoogleToken);
 /**
  * @swagger
  * /google/callback:
@@ -176,6 +177,7 @@ router.get(
  *         description: User successfully created.
  */
 router.post("/sign-up", authController.signup);
+router.post("/register", authController.signup);
 
 /**
  * @swagger

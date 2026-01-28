@@ -15,59 +15,77 @@ const AreaChartComponent: React.FC<Props> = ({
   title,
   data,
   categories,
-  color = "#3b82f6",
+  color = "#6366f1",
   percentageChange,
 }) => {
-  const options = {
+  const options: any = {
     chart: {
       id: "area-chart",
-
+      toolbar: { show: false },
       zoom: { enabled: false },
+      fontFamily: 'inherit',
     },
     colors: [color],
     dataLabels: { enabled: false },
     stroke: {
       curve: "smooth",
-      width: 2,
+      width: 3,
+    },
+    fill: {
+      type: 'gradient',
+      gradient: {
+        shadeIntensity: 1,
+        opacityFrom: 0.45,
+        opacityTo: 0.05,
+        stops: [0, 100]
+      }
     },
     xaxis: {
       categories,
-      labels: { style: { colors: "#9ca3af" } },
+      axisBorder: { show: false },
+      axisTicks: { show: false },
+      labels: { 
+        style: { colors: "#94a3b8", fontWeight: 600, fontSize: '10px' },
+        offsetY: 2
+      },
     },
     yaxis: {
-      labels: { style: { colors: "#9ca3af" } },
+      labels: { 
+        style: { colors: "#94a3b8", fontWeight: 600, fontSize: '10px' },
+      },
     },
     tooltip: {
-      theme: "dark",
+      theme: "light",
+      x: { show: true },
+      y: { title: { formatter: () => '' } }
     },
     grid: {
-      show: false,
+      borderColor: '#f1f5f9',
+      strokeDashArray: 4,
+      padding: { left: 10, right: 10 }
     },
   };
 
-  const series = [
-    {
-      name: title,
-      data,
-    },
-  ];
+  const series = [{ name: title, data }];
 
   return (
-    <div className="p-4 rounded-2xl shadow-sm w-full bg-white">
-      <div className="flex justify-between items-center mb-2">
-        <h2 className="text-black text-lg font-semibold">{title}</h2>
+    <div className="p-6 rounded-2xl shadow-sm w-full bg-white border border-gray-100 h-full">
+      <div className="flex justify-between items-center mb-6">
+        <h2 className="text-gray-900 text-sm font-bold uppercase tracking-widest">{title}</h2>
         {percentageChange !== undefined && (
-          <span
-            className={`text-sm font-medium ${
-              percentageChange >= 0 ? "text-green-400" : "text-red-400"
+          <div
+            className={`flex items-center gap-1 px-2 py-1 rounded-lg text-[10px] font-black ${
+              percentageChange >= 0 ? "bg-emerald-50 text-emerald-600" : "bg-rose-50 text-rose-600"
             }`}
           >
-            {percentageChange >= 0 ? <TrendingUp /> : <TrendingDown />}{" "}
+            {percentageChange >= 0 ? <TrendingUp size={12} /> : <TrendingDown size={12} />}
             {Math.abs(percentageChange)}%
-          </span>
+          </div>
         )}
       </div>
-      <Chart options={options} series={series} type="area" height={200} />
+      <div className="min-h-[220px]">
+        <Chart options={options} series={series} type="area" height="100%" width="100%" />
+      </div>
     </div>
   );
 };

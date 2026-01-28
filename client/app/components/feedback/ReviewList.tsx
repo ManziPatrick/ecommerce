@@ -9,6 +9,7 @@ import { getCloudinaryUrl } from "@/app/utils/cloudinaryUtils";
 import { Trash2, User } from "lucide-react";
 import { useAppSelector, useAppDispatch } from "@/app/store/hooks";
 import { addToast } from "@/app/store/slices/ToastSlice";
+import UserAvatar from "../atoms/UserAvatar";
 
 interface ReviewListProps {
     productId: string;
@@ -54,13 +55,7 @@ const ReviewList: React.FC<ReviewListProps> = ({ productId }) => {
                 <div key={review.id} className="pb-6 border-b border-gray-100 last:border-0">
                     <div className="flex justify-between items-start mb-3">
                         <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 rounded-full bg-indigo-100 flex items-center justify-center overflow-hidden">
-                                {review.user?.avatar ? (
-                                    <Image src={getCloudinaryUrl(review.user.avatar, "w_100,h_100,c_fill,f_auto,q_auto")} alt={review.user.name} width={40} height={40} className="object-cover" />
-                                ) : (
-                                    <User size={20} className="text-indigo-600" />
-                                )}
-                            </div>
+                            <UserAvatar user={review.user} size={40} />
                             <div>
                                 <h4 className="font-semibold text-gray-900 text-sm">{review.user?.name}</h4>
                                 <p className="text-xs text-gray-500">

@@ -107,41 +107,46 @@ const ProductModal: React.FC<ProductModalProps> = ({
     <AnimatePresence>
       {isOpen && (
         <motion.div
-          className="fixed inset-0 bg-opacity-60 backdrop-blur-sm flex items-center justify-center z-50"
+          className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-2 sm:p-4"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.1 }}
         >
           <motion.div
-            className="bg-white rounded-xl shadow-2xl p-8 w-full max-w-4xl max-h-[80%] overflow-auto border border-gray-100"
+            className="bg-white rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] sm:max-h-[85vh] overflow-hidden flex flex-col border border-gray-100"
             initial={{ opacity: 0, scale: 0.9, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 10 }}
             transition={{ type: "spring", stiffness: 300, damping: 30 }}
           >
-            <div className="flex justify-between items-center mb-6 border-b border-gray-200 pb-4">
-              <h2 className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-blue-500 bg-clip-text text-transparent">
-                {initialData ? "Edit Product" : "Create Product"}
-              </h2>
+            <div className="flex justify-between items-center p-5 sm:p-8 border-b border-gray-100 bg-white sticky top-0 z-10">
+              <div>
+                <h2 className="text-xl sm:text-2xl font-black text-gray-900 tracking-tight">
+                  {initialData ? "Edit Product" : "Create Product"}
+                </h2>
+                <p className="text-xs text-gray-400 font-medium">Fill in the details below</p>
+              </div>
               <button
                 onClick={onClose}
-                className="text-gray-400 hover:text-gray-700 transition-colors duration-200 rounded-full p-1 hover:bg-gray-100"
+                className="text-gray-400 hover:text-gray-900 transition-all duration-200 rounded-xl p-2 hover:bg-gray-50 bg-gray-50/50"
               >
-                <X size={24} />
+                <X size={20} />
               </button>
             </div>
 
-            <ProductForm
-              form={form}
-              onSubmit={onSubmit}
-              categories={categories}
-              categoryAttributes={categoryAttributes}
-              allAttributes={allAttributes}
-              isLoading={isLoading}
-              error={error}
-              submitLabel={initialData ? "Update" : "Create"}
-            />
+            <div className="flex-1 overflow-y-auto p-5 sm:p-8 custom-scrollbar">
+              <ProductForm
+                form={form}
+                onSubmit={onSubmit}
+                categories={categories}
+                categoryAttributes={categoryAttributes}
+                allAttributes={allAttributes}
+                isLoading={isLoading}
+                error={error}
+                submitLabel={initialData ? "Update" : "Create"}
+              />
+            </div>
           </motion.div>
         </motion.div>
       )}

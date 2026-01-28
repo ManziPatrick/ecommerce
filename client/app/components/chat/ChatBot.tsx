@@ -125,7 +125,7 @@ export default function ChatBot() {
               initial={{ opacity: 0, scale: 0.9, y: 20, filter: "blur(10px)" }}
               animate={{ opacity: 1, scale: 1, y: 0, filter: "blur(0px)" }}
               exit={{ opacity: 0, scale: 0.9, y: 20, filter: "blur(10px)" }}
-              className="mb-6 w-[360px] sm:w-[400px] h-[550px] max-h-[85vh] bg-white/90 dark:bg-zinc-950/90 backdrop-blur-xl rounded-[2rem] shadow-[0_20px_50px_rgba(0,0,0,0.15)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.4)] overflow-hidden flex flex-col border border-white/20 dark:border-zinc-800 pointer-events-auto ring-1 ring-black/5"
+              className="mb-6 w-[360px] sm:w-[450px] h-[600px] max-h-[85vh] bg-white/90 dark:bg-zinc-950/90 backdrop-blur-xl rounded-[2.5rem] shadow-[0_20px_70px_rgba(0,0,0,0.25)] dark:shadow-[0_20px_70px_rgba(0,0,0,0.5)] overflow-hidden flex flex-col border border-white/20 dark:border-zinc-800 pointer-events-auto ring-1 ring-black/5"
             >
               {/* Header */}
               <div className="bg-zinc-900 dark:bg-zinc-900 p-5 flex justify-between items-center text-white shrink-0">

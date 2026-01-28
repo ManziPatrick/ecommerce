@@ -138,9 +138,9 @@ const VariantForm: React.FC<VariantFormProps> = ({
             {/* Collapsible Content */}
             {!isCollapsed && (
               <div className="p-4 pt-0 space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 pt-4">
+                  <div className="space-y-1.5">
+                    <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400">
                       SKU
                     </label>
                     <Controller
@@ -150,27 +150,27 @@ const VariantForm: React.FC<VariantFormProps> = ({
                         required: "SKU is required",
                         pattern: {
                           value: /^[a-zA-Z0-9-]+$/,
-                          message: "SKU must be alphanumeric with dashes",
+                          message: "Use alphanumeric/dashes",
                         },
                       }}
                       render={({ field }) => (
                         <input
                           {...field}
                           type="text"
-                          className={inputStyles}
+                          className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all outline-none bg-gray-50/50"
                           placeholder="TSH-RED-S"
                         />
                       )}
                     />
                     {errors.variants?.[index]?.sku && (
-                      <p className="text-red-500 text-xs mt-1">
+                      <p className="text-rose-500 text-[10px] font-bold uppercase tracking-wider pl-1">
                         {errors.variants[index].sku?.message}
                       </p>
                     )}
                   </div>
 
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <div className="space-y-1.5">
+                    <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400">
                       Price
                     </label>
                     <Controller
@@ -178,27 +178,27 @@ const VariantForm: React.FC<VariantFormProps> = ({
                       control={control}
                       rules={{
                         required: "Price is required",
-                        min: { value: 0.01, message: "Price must be positive" },
+                        min: { value: 0.01, message: "Must be positive" },
                       }}
                       render={({ field }) => (
                         <input
                           {...field}
                           type="number"
                           step="0.01"
-                          className={inputStyles}
+                          className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all outline-none bg-gray-50/50"
                           placeholder="19.99"
                         />
                       )}
                     />
                     {errors.variants?.[index]?.price && (
-                      <p className="text-red-500 text-xs mt-1">
+                      <p className="text-rose-500 text-[10px] font-bold uppercase tracking-wider pl-1">
                         {errors.variants[index].price?.message}
                       </p>
                     )}
                   </div>
 
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <div className="space-y-1.5">
+                    <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400">
                       Discount Price
                     </label>
                     <Controller
@@ -209,7 +209,7 @@ const VariantForm: React.FC<VariantFormProps> = ({
                         validate: (value) => {
                           if (!value) return true;
                           const price = watch(`variants.${index}.price`);
-                          return Number(value) < Number(price) || "Must be less than price";
+                          return Number(value) < Number(price) || "Must be < price";
                         }
                       }}
                       render={({ field }) => (
@@ -217,71 +217,66 @@ const VariantForm: React.FC<VariantFormProps> = ({
                           {...field}
                           type="number"
                           step="0.01"
-                          className={inputStyles}
+                          className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all outline-none bg-gray-50/50"
                           placeholder="15.99"
                         />
                       )}
                     />
                     {errors.variants?.[index]?.discountPrice && (
-                      <p className="text-red-500 text-xs mt-1">
+                      <p className="text-rose-500 text-[10px] font-bold uppercase tracking-wider pl-1">
                         {errors.variants[index].discountPrice?.message}
                       </p>
                     )}
                   </div>
 
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Stock
+                  <div className="space-y-1.5">
+                    <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400">
+                      Stock Level
                     </label>
                     <Controller
                       name={`variants.${index}.stock`}
                       control={control}
                       rules={{
-                        required: "Stock is required",
-                        min: { value: 0, message: "Stock cannot be negative" },
+                        required: "Required",
+                        min: { value: 0, message: "Non-negative" },
                       }}
                       render={({ field }) => (
                         <input
                           {...field}
                           type="number"
-                          className={inputStyles}
+                          className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all outline-none bg-gray-50/50"
                           placeholder="50"
                         />
                       )}
                     />
                     {errors.variants?.[index]?.stock && (
-                      <p className="text-red-500 text-xs mt-1">
+                      <p className="text-rose-500 text-[10px] font-bold uppercase tracking-wider pl-1">
                         {errors.variants[index].stock?.message}
                       </p>
                     )}
                   </div>
 
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Low Stock Threshold
+                  <div className="space-y-1.5">
+                    <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400">
+                      Low Stock Warning
                     </label>
                     <Controller
                       name={`variants.${index}.lowStockThreshold`}
                       control={control}
-                      rules={{ min: { value: 0, message: "Cannot be negative" } }}
+                      rules={{ min: { value: 0, message: "Non-negative" } }}
                       render={({ field }) => (
                         <input
                           {...field}
                           type="number"
-                          className={inputStyles}
+                          className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all outline-none bg-gray-50/50"
                           placeholder="10"
                         />
                       )}
                     />
-                    {errors.variants?.[index]?.lowStockThreshold && (
-                      <p className="text-red-500 text-xs mt-1">
-                        {errors.variants[index].lowStockThreshold?.message}
-                      </p>
-                    )}
                   </div>
 
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <div className="space-y-1.5">
+                    <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400">
                       Barcode
                     </label>
                     <Controller
@@ -291,32 +286,14 @@ const VariantForm: React.FC<VariantFormProps> = ({
                         <input
                           {...field}
                           type="text"
-                          className={inputStyles}
-                          placeholder="123456789012"
+                          className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all outline-none bg-gray-50/50"
+                          placeholder="123456789"
                         />
                       )}
                     />
                   </div>
 
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Warehouse Location
-                    </label>
-                    <Controller
-                      name={`variants.${index}.warehouseLocation`}
-                      control={control}
-                      render={({ field }) => (
-                        <input
-                          {...field}
-                          type="text"
-                          className={inputStyles}
-                          placeholder="WH-A1"
-                        />
-                      )}
-                    />
-                  </div>
-
-                  <div className="md:col-span-2">
+                  <div className="lg:col-span-3 space-y-1.5">
                     <ImageUploader
                       control={control}
                       errors={errors}
@@ -325,11 +302,6 @@ const VariantForm: React.FC<VariantFormProps> = ({
                       name={`variants.${index}.images`}
                       maxFiles={5}
                     />
-                    {errors.variants?.[index]?.images && (
-                      <p className="text-red-500 text-xs mt-1">
-                        {errors.variants[index].images?.message}
-                      </p>
-                    )}
                   </div>
                 </div>
 

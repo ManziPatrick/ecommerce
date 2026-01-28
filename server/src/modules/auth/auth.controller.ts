@@ -190,4 +190,36 @@ export class AuthController {
       });
     }
   );
+
+  verifyGoogleToken = asyncHandler(
+    async (req: Request, res: Response): Promise<void> => {
+      const { idToken } = req.body;
+      const { user, accessToken, refreshToken } =
+        await this.authService.verifyGoogleToken(idToken);
+
+      res.cookie("refreshToken", refreshToken, cookieOptions);
+      res.cookie("accessToken", accessToken, cookieOptions);
+
+      const userId = user.id;
+      const sessionId = req.session.id;
+      await this.cartService?.mergeCartsOnLogin(sessionId, userId);
+
+      sendResponse(res, 200, {
+        message: "Google login successful",
+        data: {
+          user: {
+            id: user.id,
+            name: user.name,
+            role: user.role,
+            avatar: user.avatar,
+          },
+        },
+      });
+
+      this.logsService.info("Google Sign In", {
+        userId,
+        sessionId: req.session.id,
+      });
+    }
+  );
 }

@@ -18,6 +18,41 @@ export class ChatService {
     return chat;
   }
 
+  // Create or get existing shop chat
+  async createShopChat(userId: string, shopId: string): Promise<Chat> {
+    const chat = await this.chatRepository.findOrCreateShopChat(userId, shopId);
+    
+    // Notify shop owner
+    if ((chat as any).shop?.ownerId) {
+      this.io.to(`vendor:${(chat as any).shop.ownerId}`).emit("shop:chatCreated", chat);
+    }
+    
+    // Notify admins
+    this.io.to("admin").emit("shop:chatCreated", chat);
+    
+    return chat;
+  }
+
+  // Get all chats for a shop (vendor dashboard)
+  async getShopChats(shopId: string): Promise<Chat[]> {
+    return this.chatRepository.findChatsByShop(shopId);
+  }
+
+  // Get all shop chats (admin oversight)
+  async getAllShopChats(status?: "OPEN" | "RESOLVED"): Promise<Chat[]> {
+    return this.chatRepository.findAllShopChats(status);
+  }
+
+  // Mark messages as read
+  async markMessagesAsRead(chatId: string, userId: string): Promise<number> {
+    return this.chatRepository.markMessagesAsRead(chatId, userId);
+  }
+
+  // Get unread message count
+  async getUnreadCount(userId: string): Promise<number> {
+    return this.chatRepository.getUnreadCount(userId);
+  }
+
   async getChat(id: string): Promise<Chat | null> {
     const chat = await this.chatRepository.findChatById(id);
     if (!chat) throw new Error("Chat not found");
@@ -87,7 +122,35 @@ export class ChatService {
       type,
       url
     );
+    
+    // Emit to chat room
     this.io.to(`chat:${chatId}`).emit("newMessage", message);
+    
+    // If it's a shop chat, emit to shop owner and admins
+    if ((message as any).chat?.shopId) {
+      const shopOwnerId = (message as any).chat.shop?.ownerId;
+      if (shopOwnerId && shopOwnerId !== senderId) {
+        this.io.to(`vendor:${shopOwnerId}`).emit("shop:newMessage", {
+          ...message,
+          chatId,
+          shopId: (message as any).chat.shopId
+        });
+      }
+      
+      // Notify customer if vendor sent the message
+      const customerId = (message as any).chat.userId;
+      if (customerId && customerId !== senderId) {
+        this.io.to(`user:${customerId}`).emit("shop:newMessage", {
+          ...message,
+          chatId,
+          shopId: (message as any).chat.shopId
+        });
+      }
+      
+      // Notify admins
+      this.io.to("admin").emit("shop:newMessage", message);
+    }
+    
     return message;
   }
 

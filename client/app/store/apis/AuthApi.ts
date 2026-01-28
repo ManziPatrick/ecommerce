@@ -86,7 +86,21 @@ export const authApi = apiSlice.injectEndpoints({
       onQueryStarted: async (_, { dispatch, queryFulfilled }) => {
         try {
           const { data } = await queryFulfilled;
-          // Backend returns { success, message, user }
+          dispatch(setUser({ user: data.user }));
+        } catch (error) {
+          // Error handled by component
+        }
+      },
+    }),
+    googleLogin: builder.mutation<{ accessToken: string; user: User }, { idToken: string }>({
+      query: (data) => ({
+        url: "/auth/google/verify",
+        method: "POST",
+        body: data,
+      }),
+      onQueryStarted: async (_, { dispatch, queryFulfilled }) => {
+        try {
+          const { data } = await queryFulfilled;
           dispatch(setUser({ user: data.user }));
         } catch (error) {
           // Error handled by component
@@ -103,4 +117,5 @@ export const {
   useForgotPasswordMutation,
   useResetPasswordMutation,
   useCheckAuthMutation,
+  useGoogleLoginMutation,
 } = authApi;

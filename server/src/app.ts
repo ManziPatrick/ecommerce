@@ -87,7 +87,7 @@ export const createApp = async () => {
     }),
     secret: process.env.SESSION_SECRET || "dev-session-secret",
     resave: false,             // redis-connect recommends false
-    saveUninitialized: false,  // false is better for login sessions (only save if something is added to session)
+    saveUninitialized: true,   // Changed to true to ensure guest session cookies are sent back to the client
     cookie: {
       httpOnly: true,
       // Secure MUST be true for SameSite=None

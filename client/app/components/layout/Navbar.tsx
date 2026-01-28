@@ -2,6 +2,7 @@
 import React, { useState, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { motion, AnimatePresence } from "framer-motion";
 import UserMenu from "../molecules/UserMenu";
 import {
   ShoppingCart,
@@ -11,7 +12,10 @@ import {
   Search,
   LogOut,
   Heart,
+  MessageCircle,
 } from "lucide-react";
+import UnreadBadge from "../chat/UnreadBadge";
+import UserChatListModal from "../chat/UserChatListModal";
 import { usePathname, useRouter } from "next/navigation";
 import SearchBar from "../molecules/SearchBar";
 import { useGetCartCountQuery } from "@/app/store/apis/CartApi";
@@ -24,6 +28,7 @@ import { useSignOutMutation } from "@/app/store/apis/AuthApi";
 import { logout } from "@/app/store/slices/AuthSlice";
 import { generateUserAvatar } from "@/app/utils/placeholderImage";
 import { getCloudinaryUrl } from "@/app/utils/cloudinaryUtils";
+import UserAvatar from "../atoms/UserAvatar";
 
 const Navbar = () => {
   const pathname = usePathname();
@@ -38,6 +43,7 @@ const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
+  const [chatListOpen, setChatListOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const menuRef = useRef(null);
   const mobileMenuRef = useRef(null);
@@ -115,6 +121,22 @@ const Navbar = () => {
                 )}
               </Link>
 
+              {/* Chat Notifications */}
+              {isAuthenticated && (
+                <div 
+                  onClick={() => setChatListOpen(true)}
+                  className="relative p-2 text-gray-700 hover:text-indigo-600 transition-colors cursor-pointer group"
+                >
+                  <MessageCircle className="text-[20px] sm:text-[22px]" />
+                  <UnreadBadge />
+                  
+                  {/* Tooltip */}
+                  <div className="absolute top-full right-0 mt-2 py-2 px-3 bg-zinc-900 text-white text-[10px] rounded-lg opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity whitespace-nowrap z-[60] shadow-xl border border-zinc-800 font-bold uppercase tracking-widest">
+                    Manage Conversations
+                  </div>
+                </div>
+              )}
+
               {/* Cart */}
               <Link
                 href="/cart"
@@ -134,33 +156,10 @@ const Navbar = () => {
                 <div className="relative" ref={menuRef}>
                   <button
                     onClick={() => setMenuOpen(!menuOpen)}
-                    className="flex items-center p-1 rounded-full hover:bg-gray-100 transition-colors"
+                    className="flex items-center rounded-full hover:ring-2 hover:ring-indigo-100 transition-all"
                     aria-label="User menu"
                   >
-                    {user?.avatar ? (
-                      <div className="w-7 h-7 rounded-full bg-gray-200 overflow-hidden border border-gray-300">
-                        <Image
-                          src={getCloudinaryUrl(user.avatar, "w_100,h_100,c_fill,f_auto,q_auto")}
-                          alt="User Profile"
-                          width={28}
-                          height={28}
-                          className="rounded-full object-cover w-full h-full"
-                          onError={(e) => {
-                            e.currentTarget.src = generateUserAvatar(user.name);
-                          }}
-                        />
-                      </div>
-                    ) : (
-                      <div className="w-[35px] h-[35px] rounded-full overflow-hidden border border-gray-300">
-                        <Image
-                          src={generateUserAvatar(user?.name || "User")}
-                          alt="User Profile"
-                          width={35}
-                          height={35}
-                          className="rounded-full object-cover w-full h-full"
-                        />
-                      </div>
-                    )}
+                    <UserAvatar user={user} size={35} />
                   </button>
 
                   {menuOpen && (
@@ -281,6 +280,11 @@ const Navbar = () => {
           )}
         </nav>
       </header>
+      <AnimatePresence>
+        {chatListOpen && (
+          <UserChatListModal onClose={() => setChatListOpen(false)} />
+        )}
+      </AnimatePresence>
     </>
   );
 };
