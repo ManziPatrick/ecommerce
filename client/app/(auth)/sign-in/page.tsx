@@ -116,7 +116,7 @@ const SignIn = () => {
             </Link>
           </div>
 
-          {/* Testing Instructions */}
+{/* Testing Instructions
           <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
             <h3 className="text-sm font-semibold text-blue-800 mb-2">
               🧪 Testing Accounts
@@ -138,6 +138,7 @@ const SignIn = () => {
               features.
             </p>
           </div>
+          */}
 
           <div className="relative my-4">
             <div className="absolute inset-0 flex items-center">
