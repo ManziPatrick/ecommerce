@@ -18,4 +18,5 @@ ENV HOST=::
 ENV PORT=5000
 
 EXPOSE 5000
-CMD ["sh", "-c", "npx prisma migrate deploy && npm run seed && npm start"]
+# Deploy migrations, always ensure tables and enums are correct, then seed and start
+CMD ["sh", "-c", "npx prisma migrate deploy && npm run db:create-missing && npm run db:fix-enum && npm run seed && npm start"]

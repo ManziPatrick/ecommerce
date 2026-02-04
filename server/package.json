@@ -10,7 +10,12 @@
     "build": "prisma generate && tsc",
     "start": "node dist/server.js",
     "prisma": "prisma",
-    "seed": "ts-node seeds/seed.ts"
+    "seed": "ts-node seeds/seed.ts",
+    "db:check": "ts-node scripts/check-missing-tables.ts",
+    "db:create-missing": "ts-node scripts/create-missing-tables.ts",
+    "db:fix-enum": "ts-node scripts/fix-role-enum.ts",
+    "db:migrate": "prisma migrate deploy",
+    "db:push": "prisma db push --accept-data-loss"
   },
   "keywords": [],
   "author": "",
