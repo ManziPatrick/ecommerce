@@ -5,7 +5,7 @@ const getBaseURL = () => {
   if (typeof window !== "undefined") {
     // Client-side: use environment variables
     return process.env.NODE_ENV === "production"
-      ? "https://ecommerce-1-cfoi.onrender.com/api/v1"
+      ? "https://macyemacyeapi.andasy.dev/api/v1"
       : "http://localhost:5000/api/v1";
   }
   // Server-side: default to development

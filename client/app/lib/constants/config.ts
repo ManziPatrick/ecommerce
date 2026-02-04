@@ -1,5 +1,5 @@
 const DEV_API_HOST = "http://localhost:5000";
-const PROD_API_HOST = "https://ecommerce-1-cfoi.onrender.com";
+const PROD_API_HOST = "https://macyemacyeapi.andasy.dev";
 
 const BASE_HOST =
   process.env.NODE_ENV === "production"
