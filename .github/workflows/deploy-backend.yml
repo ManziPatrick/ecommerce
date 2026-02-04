@@ -9,9 +9,14 @@ jobs:
   deploy:
     name: Deploy App
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./server
     steps:
       - uses: actions/checkout@v4
       - uses: quarksgroup/andasy-action@main
+        with:
+          project_path: ./server
         env:
           # Set access token
           ANDASY_ACCESS_TOKEN: ${{ secrets.ANDASY_ACCESS_TOKEN }}
