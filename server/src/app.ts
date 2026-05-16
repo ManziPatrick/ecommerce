@@ -56,9 +56,18 @@ export const createApp = async () => {
   // 2. CORS
   // Ensure "ecommerce-1-cfoi.onrender.com" or your exact backend domain is NOT in the allowed origins if you are using that for backend.
   // Allowed origins should be the FRONTEND domains.
-  const allowedOrigins = process.env.ALLOWED_ORIGINS 
-    ? process.env.ALLOWED_ORIGINS.split(",") 
-    : ["http://localhost:3000", "https://ecommerce-blush-six-71.vercel.app", "https://macyemacye.netlify.app", "http://localhost:5173", "https://e-commerce-crafters-bn-1-3ibl.onrender.com","https://test.macyemacye.com"];
+  const defaultOrigins = [
+    "http://localhost:3000",
+    "https://ecommerce-blush-six-71.vercel.app",
+    "https://macyemacye.netlify.app",
+    "http://localhost:5173",
+    "https://e-commerce-crafters-bn-1-3ibl.onrender.com",
+    "https://test.macyemacye.com",
+  ];
+  const envOrigins = process.env.ALLOWED_ORIGINS
+    ? process.env.ALLOWED_ORIGINS.split(",").map((origin) => origin.trim()).filter(Boolean)
+    : [];
+  const allowedOrigins = Array.from(new Set([...defaultOrigins, ...envOrigins]));
 
   app.use(cors({
     origin: allowedOrigins,

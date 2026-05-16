@@ -192,7 +192,7 @@ async function createMissingTables() {
     
   } catch (error: any) {
     console.error("❌ Error creating missing tables:", error.message);
-    throw error;
+    console.warn("⚠️  Continuing startup despite create-missing-tables error.");
   } finally {
     await prisma.$disconnect();
   }
@@ -205,5 +205,6 @@ createMissingTables()
   })
   .catch((error) => {
     console.error("\n💥 Failed to create tables:", error);
-    process.exit(1);
+    console.warn("⚠️  Non-fatal: allowing server startup to continue.");
+    process.exit(0);
   });
