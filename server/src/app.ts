@@ -58,7 +58,7 @@ export const createApp = async () => {
   // Allowed origins should be the FRONTEND domains.
   const allowedOrigins = process.env.ALLOWED_ORIGINS 
     ? process.env.ALLOWED_ORIGINS.split(",") 
-    : ["http://localhost:3000", "https://ecommerce-blush-six-71.vercel.app", "https://macyemacye.netlify.app", "http://localhost:5173", "https://e-commerce-crafters-bn-1-3ibl.onrender.com,https://test.macyemacye.com"];
+    : ["http://localhost:3000", "https://ecommerce-blush-six-71.vercel.app", "https://macyemacye.netlify.app", "http://localhost:5173", "https://e-commerce-crafters-bn-1-3ibl.onrender.com","https://test.macyemacye.com"];
 
   app.use(cors({
     origin: allowedOrigins,
